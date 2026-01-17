@@ -87,18 +87,18 @@ export default async function Home() {
                                 </p>
                                 <div className="flex flex-wrap gap-4">
                                     <Link
-                                        href="/categoria/biquinis"
+                                        href="/novidades"
                                         className="inline-flex items-center gap-2 rounded-full gradient-gold px-6 py-3 text-sm font-semibold text-white shadow-lg transition-transform hover:scale-105"
                                     >
                                         Ver Novidades
                                         <ArrowRight className="h-4 w-4" />
                                     </Link>
-                                    <Link
-                                        href="/categoria/biquinis"
+                                    <a
+                                        href="#categorias"
                                         className="inline-flex items-center gap-2 rounded-full border-2 border-primary bg-transparent px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
                                     >
-                                        Explorar Colecao
-                                    </Link>
+                                        Explorar Coleção
+                                    </a>
                                 </div>
                             </div>
                             <div className="relative">
@@ -146,7 +146,7 @@ export default async function Home() {
                 </section>
 
                 {/* Categories */}
-                <section className="py-16 sm:py-24">
+                <section id="categorias" className="py-16 sm:py-24 scroll-mt-20">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="mb-12 text-center">
                             <h2 className="mb-4 text-3xl font-bold text-foreground sm:text-4xl">

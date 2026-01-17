@@ -17,6 +17,7 @@ interface Product {
     images: string[];
     colors: { name: string; hex: string }[];
     shippingOptions: string[];
+    categoryId: string;
     category: {
         name: string;
     };
@@ -248,7 +249,7 @@ export default function AdminProducts() {
             comparePrice: product.comparePrice
                 ? (product.comparePrice / 100).toString()
                 : "",
-            categoryId: "",
+            categoryId: product.categoryId,
             images: product.images.join(", "),
             sizes: "P, M, G, GG",
             colors: parseColors(product.colors),

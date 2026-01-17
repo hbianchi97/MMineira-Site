@@ -11,6 +11,8 @@ import {
     Database,
     ChevronLeft,
     ChevronRight,
+    Trash2,
+    X,
 } from "lucide-react";
 
 interface ProductAnalytics {
@@ -58,7 +60,11 @@ export default function AnalyticsDashboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [seeding, setSeeding] = useState(false);
+    const [clearing, setClearing] = useState(false);
     const [seedMessage, setSeedMessage] = useState<string | null>(null);
+    const [seedSalesCount, setSeedSalesCount] = useState(100);
+    const [seedViewsCount, setSeedViewsCount] = useState(200);
+    const [showSeedModal, setShowSeedModal] = useState(false);
 
     useEffect(() => {
         fetchAnalytics();
@@ -105,13 +111,19 @@ export default function AnalyticsDashboard() {
     const totalCount = data.reduce((sum, d) => sum + d.count, 0);
 
     const handleSeedData = async () => {
-        if (!confirm("Isso ira gerar 300 vendas e 500 visualizacoes de teste. Continuar?")) return;
-
         setSeeding(true);
         setSeedMessage(null);
+        setShowSeedModal(false);
 
         try {
-            const res = await fetch("/api/admin/seed-analytics", { method: "POST" });
+            const res = await fetch("/api/admin/seed-analytics", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    salesCount: seedSalesCount,
+                    viewsCount: seedViewsCount,
+                }),
+            });
             const result = await res.json();
 
             if (res.ok) {
@@ -124,6 +136,29 @@ export default function AnalyticsDashboard() {
             setSeedMessage("Erro de conexao");
         } finally {
             setSeeding(false);
+        }
+    };
+
+    const handleClearData = async () => {
+        if (!confirm("Tem certeza que deseja ZERAR todos os dados de vendas e acessos? Esta acao nao pode ser desfeita. Os dados serao registrados no log antes da exclusao.")) return;
+
+        setClearing(true);
+        setSeedMessage(null);
+
+        try {
+            const res = await fetch("/api/admin/seed-analytics", { method: "DELETE" });
+            const result = await res.json();
+
+            if (res.ok) {
+                setSeedMessage(`Dados zerados: ${result.deletedData.orders} pedidos, ${result.deletedData.orderItems} itens, ${result.deletedData.productViews} visualizacoes`);
+                fetchAnalytics();
+            } else {
+                setSeedMessage(result.error || "Erro ao zerar dados");
+            }
+        } catch {
+            setSeedMessage("Erro de conexao");
+        } finally {
+            setClearing(false);
         }
     };
 
@@ -170,18 +205,32 @@ export default function AnalyticsDashboard() {
                     <BarChart3 className="h-7 w-7 text-amber-600" />
                     Dashboard de Analytics
                 </h1>
-                <button
-                    onClick={handleSeedData}
-                    disabled={seeding}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition disabled:opacity-50"
-                >
-                    {seeding ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                        <Database className="h-4 w-4" />
-                    )}
-                    Gerar Dados de Teste
-                </button>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => setShowSeedModal(true)}
+                        disabled={seeding || clearing}
+                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition disabled:opacity-50"
+                    >
+                        {seeding ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <Database className="h-4 w-4" />
+                        )}
+                        Gerar Dados
+                    </button>
+                    <button
+                        onClick={handleClearData}
+                        disabled={seeding || clearing}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition disabled:opacity-50"
+                    >
+                        {clearing ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <Trash2 className="h-4 w-4" />
+                        )}
+                        Zerar Dados
+                    </button>
+                </div>
             </div>
 
             {seedMessage && (
@@ -430,6 +479,67 @@ export default function AnalyticsDashboard() {
                     </>
                 )}
             </div>
+
+            {showSeedModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold">Gerar Dados de Teste</h3>
+                            <button
+                                onClick={() => setShowSeedModal(false)}
+                                className="p-1 hover:bg-gray-100 rounded-lg"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-4">
+                            Defina a quantidade de vendas e acessos que serao distribuidos aleatoriamente entre os produtos.
+                        </p>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">
+                                    Quantidade de Vendas
+                                </label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max="1000"
+                                    value={seedSalesCount}
+                                    onChange={(e) => setSeedSalesCount(Math.max(1, parseInt(e.target.value) || 1))}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">
+                                    Quantidade de Acessos
+                                </label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max="5000"
+                                    value={seedViewsCount}
+                                    onChange={(e) => setSeedViewsCount(Math.max(1, parseInt(e.target.value) || 1))}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex gap-3 mt-6">
+                            <button
+                                onClick={() => setShowSeedModal(false)}
+                                className="flex-1 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={handleSeedData}
+                                className="flex-1 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition"
+                            >
+                                Gerar Dados
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

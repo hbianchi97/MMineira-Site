@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ShoppingBag, CreditCard, Truck, Shield, Check } from "lucide-react";
+import { ArrowLeft, ShoppingBag, CreditCard, Truck, Shield, Check, Store, MapPin } from "lucide-react";
 import { useCart } from "@/components/shop/CartContext";
 import { useUser } from "@clerk/nextjs";
 
@@ -27,6 +27,7 @@ export default function CheckoutPage() {
         state: "",
         zipCode: "",
         paymentMethod: "pix",
+        shippingMethod: "delivery",
     });
 
     const formatPrice = (value: number) => {
@@ -36,7 +37,7 @@ export default function CheckoutPage() {
         }).format(value / 100);
     };
 
-    const shippingCost = subtotal >= 29900 ? 0 : 1990;
+    const shippingCost = formData.shippingMethod === "pickup" ? 0 : (subtotal >= 29900 ? 0 : 1990);
     const total = subtotal + shippingCost;
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -206,7 +207,61 @@ export default function CheckoutPage() {
                             <div className="bg-card border border-border rounded-xl p-6">
                                 <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                                     <Truck className="h-5 w-5 text-amber-600" />
-                                    Endereço de Entrega
+                                    Metodo de Entrega
+                                </h2>
+                                <div className="grid gap-3 mb-6">
+                                    <label className="flex items-center gap-3 p-4 border border-border rounded-lg cursor-pointer hover:bg-secondary/50 transition has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50">
+                                        <input
+                                            type="radio"
+                                            name="shippingMethod"
+                                            value="delivery"
+                                            checked={formData.shippingMethod === "delivery"}
+                                            onChange={handleInputChange}
+                                            className="w-4 h-4 text-amber-600"
+                                        />
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2">
+                                                <MapPin className="h-4 w-4 text-amber-600" />
+                                                <span className="font-medium">Entrega em casa</span>
+                                            </div>
+                                            <p className="text-sm text-muted-foreground mt-1">
+                                                {subtotal >= 29900 ? "Frete gratis para compras acima de R$ 299" : "Frete: R$ 19,90"}
+                                            </p>
+                                        </div>
+                                        {subtotal >= 29900 ? (
+                                            <span className="text-green-600 font-semibold text-sm">Gratis</span>
+                                        ) : (
+                                            <span className="text-gray-600 font-medium text-sm">R$ 19,90</span>
+                                        )}
+                                    </label>
+                                    <label className="flex items-center gap-3 p-4 border border-border rounded-lg cursor-pointer hover:bg-secondary/50 transition has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50">
+                                        <input
+                                            type="radio"
+                                            name="shippingMethod"
+                                            value="pickup"
+                                            checked={formData.shippingMethod === "pickup"}
+                                            onChange={handleInputChange}
+                                            className="w-4 h-4 text-amber-600"
+                                        />
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2">
+                                                <Store className="h-4 w-4 text-amber-600" />
+                                                <span className="font-medium">Retirar na loja</span>
+                                            </div>
+                                            <p className="text-sm text-muted-foreground mt-1">
+                                                Rua das Flores, 123 - Centro, Rio de Janeiro
+                                            </p>
+                                        </div>
+                                        <span className="text-green-600 font-semibold text-sm">Gratis</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            {formData.shippingMethod === "delivery" && (
+                            <div className="bg-card border border-border rounded-xl p-6">
+                                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                                    <MapPin className="h-5 w-5 text-amber-600" />
+                                    Endereco de Entrega
                                 </h2>
                                 <div className="grid gap-4">
                                     <div className="grid sm:grid-cols-3 gap-4">
@@ -220,7 +275,7 @@ export default function CheckoutPage() {
                                                 value={formData.zipCode}
                                                 onChange={handleInputChange}
                                                 placeholder="00000-000"
-                                                required
+                                                required={formData.shippingMethod === "delivery"}
                                                 className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                                             />
                                         </div>
@@ -337,6 +392,7 @@ export default function CheckoutPage() {
                                     </div>
                                 </div>
                             </div>
+                            )}
 
                             <div className="bg-card border border-border rounded-xl p-6">
                                 <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -475,14 +531,21 @@ export default function CheckoutPage() {
                                 </div>
                             </div>
 
-                            {shippingCost > 0 && (
+                            {shippingCost > 0 && formData.shippingMethod === "delivery" && (
                                 <div className="mt-4 p-3 bg-amber-50 rounded-lg">
                                     <p className="text-sm text-amber-800">
                                         Falta{" "}
                                         <span className="font-semibold">
                                             {formatPrice(29900 - subtotal)}
                                         </span>{" "}
-                                        para frete grátis!
+                                        para frete gratis!
+                                    </p>
+                                </div>
+                            )}
+                            {formData.shippingMethod === "pickup" && (
+                                <div className="mt-4 p-3 bg-green-50 rounded-lg">
+                                    <p className="text-sm text-green-700">
+                                        Voce escolheu retirar na loja. Frete gratis!
                                     </p>
                                 </div>
                             )}

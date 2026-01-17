@@ -48,24 +48,26 @@ export default async function PostPage({ params }: PostPageProps) {
 
                 <article className="py-12 sm:py-16">
                     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-                        <Link
-                            href="/novidades"
-                            className="mb-8 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-                        >
-                            <ChevronLeft className="h-4 w-4" />
-                            Voltar para novidades
-                        </Link>
+                        <div className="flex items-center justify-between mb-8">
+                            <Link
+                                href="/novidades"
+                                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+                            >
+                                <ChevronLeft className="h-4 w-4" />
+                                Voltar para novidades
+                            </Link>
+                            {post.publishedAt && (
+                                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                                    <Calendar className="h-4 w-4" />
+                                    {formatDate(post.publishedAt)}
+                                </div>
+                            )}
+                        </div>
 
-                        <div className={post.imageUrl ? "-mt-24 relative z-10" : ""}>
+                        <div className={post.imageUrl ? "-mt-16 relative z-10" : ""}>
                             <div className="bg-card rounded-2xl p-6 sm:p-10 shadow-lg border border-border">
-                                {post.publishedAt && (
-                                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4">
-                                        <Calendar className="h-4 w-4" />
-                                        {formatDate(post.publishedAt)}
-                                    </div>
-                                )}
 
-                                <h1 className="text-2xl sm:text-4xl font-bold text-foreground mb-6">
+                                <h1 className="text-2xl sm:text-4xl font-bold text-foreground mb-6 mt-2">
                                     {post.title}
                                 </h1>
 

@@ -9,6 +9,7 @@ import {
     getFeaturedProducts,
     parseProductImages,
     getSiteConfig,
+    getAllSiteConfigs,
 } from "@/lib/shop-data";
 
 const benefits = [
@@ -37,11 +38,26 @@ const defaultHomeConfig = {
 };
 
 export default async function Home() {
-    const [categories, featuredProducts, homeConfig] = await Promise.all([
+    const [categories, featuredProducts, homeConfig, allConfigs] = await Promise.all([
         getCategories(),
         getFeaturedProducts(4),
         getSiteConfig("home"),
+        getAllSiteConfigs(),
     ]);
+
+    const configBySlug = Object.fromEntries(
+        allConfigs.map((c) => [c.pageKey, c])
+    );
+
+    const getCategoryImage = (slug: string, fallback: string | null) => {
+        const config = configBySlug[slug] as { images?: unknown; imageUrl?: string } | undefined;
+        if (config) {
+            const images = Array.isArray(config.images) ? config.images : [];
+            if (images.length > 0 && images[0]) return images[0] as string;
+            if (config.imageUrl) return config.imageUrl;
+        }
+        return fallback || "https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=600&q=80";
+    };
 
     const hero = {
         imageUrl: homeConfig?.imageUrl || defaultHomeConfig.imageUrl,
@@ -153,7 +169,7 @@ export default async function Home() {
                                     className="group relative aspect-[4/5] overflow-hidden rounded-2xl hover-lift"
                                 >
                                     <Image
-                                        src={category.imageUrl || "https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=600&q=80"}
+                                        src={getCategoryImage(category.slug, category.imageUrl)}
                                         alt={category.name}
                                         fill
                                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

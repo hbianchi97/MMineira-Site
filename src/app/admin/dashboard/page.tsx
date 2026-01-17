@@ -234,61 +234,101 @@ export default function AnalyticsDashboard() {
                         </p>
                     </div>
                 ) : (
-                    <div className="divide-y divide-gray-100">
-                        {data.map((item, index) => (
-                            <div
-                                key={item.productId}
-                                className="flex items-center gap-4 p-4 hover:bg-gray-50 transition"
-                            >
-                                <span className="w-8 h-8 flex items-center justify-center bg-amber-100 text-amber-700 font-bold rounded-full text-sm">
-                                    {index + 1}
-                                </span>
+                    <>
+                        <div className="divide-y divide-gray-100">
+                            {data.map((item, index) => (
+                                <div
+                                    key={item.productId}
+                                    className="flex items-center gap-4 p-4 hover:bg-gray-50 transition"
+                                >
+                                    <span className="w-8 h-8 flex items-center justify-center bg-amber-100 text-amber-700 font-bold rounded-full text-sm">
+                                        {index + 1}
+                                    </span>
 
-                                <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                                    {item.image ? (
-                                        <img
-                                            src={getDisplayUrl(item.image) || ""}
-                                            alt={item.name}
-                                            className="w-full h-full object-cover"
-                                            onError={(e) => {
-                                                (e.target as HTMLImageElement).style.display = "none";
-                                            }}
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                            ?
+                                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                                        {item.image ? (
+                                            <img
+                                                src={getDisplayUrl(item.image) || ""}
+                                                alt={item.name}
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => {
+                                                    (e.target as HTMLImageElement).style.display = "none";
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                                ?
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="font-medium text-gray-900 truncate">
+                                            {item.name}
+                                        </h3>
+                                        <div className="mt-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-gradient-to-r from-amber-400 to-amber-600 rounded-full transition-all duration-500"
+                                                style={{ width: `${(item.count / maxCount) * 100}%` }}
+                                            />
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
 
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="font-medium text-gray-900 truncate">
-                                        {item.name}
-                                    </h3>
-                                    <div className="mt-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-gradient-to-r from-amber-400 to-amber-600 rounded-full transition-all duration-500"
-                                            style={{ width: `${(item.count / maxCount) * 100}%` }}
-                                        />
+                                    <div className="text-right flex-shrink-0">
+                                        <p className="text-lg font-bold text-gray-900">
+                                            {item.count}
+                                        </p>
+                                        <p className="text-xs text-gray-500">
+                                            {analyticsType === "sales" ? "vendas" : "visualizacoes"}
+                                        </p>
+                                        {item.orders && analyticsType === "sales" && (
+                                            <p className="text-xs text-gray-400">
+                                                {item.orders} pedidos
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
+                            ))}
+                        </div>
 
-                                <div className="text-right flex-shrink-0">
-                                    <p className="text-lg font-bold text-gray-900">
-                                        {item.count}
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                        {analyticsType === "sales" ? "vendas" : "visualizacoes"}
-                                    </p>
-                                    {item.orders && analyticsType === "sales" && (
-                                        <p className="text-xs text-gray-400">
-                                            {item.orders} pedidos
-                                        </p>
-                                    )}
-                                </div>
+                        <div className="p-6 border-t border-gray-100">
+                            <h3 className="text-sm font-medium text-gray-700 mb-4 flex items-center gap-2">
+                                <BarChart3 className="h-4 w-4 text-amber-600" />
+                                Visualizacao em Barras
+                            </h3>
+                            <div className="flex items-end gap-2 h-48 bg-gray-50 rounded-xl p-4">
+                                {data.slice(0, 10).map((item, index) => {
+                                    const height = (item.count / maxCount) * 100;
+                                    return (
+                                        <div
+                                            key={item.productId}
+                                            className="flex-1 flex flex-col items-center gap-1 group"
+                                        >
+                                            <span className="text-xs font-bold text-gray-700 opacity-0 group-hover:opacity-100 transition">
+                                                {item.count}
+                                            </span>
+                                            <div
+                                                className="w-full bg-gradient-to-t from-amber-500 to-amber-300 rounded-t-lg transition-all duration-500 hover:from-amber-600 hover:to-amber-400 cursor-pointer relative group"
+                                                style={{ height: `${Math.max(height, 5)}%` }}
+                                                title={`${item.name}: ${item.count} ${analyticsType === "sales" ? "vendas" : "visualizacoes"}`}
+                                            >
+                                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-10">
+                                                    {item.name}
+                                                </div>
+                                            </div>
+                                            <span className="text-xs text-gray-500 font-medium">
+                                                {index + 1}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
                             </div>
-                        ))}
-                    </div>
+                            <div className="mt-2 flex justify-between text-xs text-gray-400">
+                                <span>Produto mais acessado</span>
+                                <span>Top 10 produtos</span>
+                            </div>
+                        </div>
+                    </>
                 )}
             </div>
         </div>

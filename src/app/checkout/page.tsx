@@ -249,7 +249,7 @@ export default function CheckoutPage() {
                                                 <span className="font-medium">Retirar na loja</span>
                                             </div>
                                             <p className="text-sm text-muted-foreground mt-1">
-                                                Rua das Flores, 123 - Centro, Rio de Janeiro
+                                                Av. Niemeyer 769 - São Conrado, Rio de Janeiro - RJ
                                             </p>
                                         </div>
                                         <span className="text-green-600 font-semibold text-sm">Gratis</span>

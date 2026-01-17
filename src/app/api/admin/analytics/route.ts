@@ -11,12 +11,31 @@ export async function GET(request: NextRequest) {
         const type = searchParams.get("type") || "sales";
         const startDate = searchParams.get("startDate");
         const endDate = searchParams.get("endDate");
+        const page = parseInt(searchParams.get("page") || "1");
+        const pageSize = parseInt(searchParams.get("pageSize") || "10");
 
         const start = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
         const end = endDate ? new Date(endDate) : new Date();
         end.setHours(23, 59, 59, 999);
 
+        const skip = (page - 1) * pageSize;
+
         if (type === "views") {
+            const allViews = await db.productView.groupBy({
+                by: ["productId"],
+                where: {
+                    viewedAt: {
+                        gte: start,
+                        lte: end,
+                    },
+                },
+                _count: {
+                    productId: true,
+                },
+            });
+
+            const total = allViews.length;
+
             const views = await db.productView.groupBy({
                 by: ["productId"],
                 where: {
@@ -33,7 +52,8 @@ export async function GET(request: NextRequest) {
                         productId: "desc",
                     },
                 },
-                take: 10,
+                skip,
+                take: pageSize,
             });
 
             const productIds = views.map((v) => v.productId);
@@ -55,8 +75,36 @@ export async function GET(request: NextRequest) {
                 };
             });
 
-            return NextResponse.json({ type: "views", data, period: { start, end } });
+            return NextResponse.json({ 
+                type: "views", 
+                data, 
+                period: { start, end },
+                pagination: {
+                    page,
+                    pageSize,
+                    total,
+                    totalPages: Math.ceil(total / pageSize),
+                }
+            });
         }
+
+        const allOrderItems = await db.orderItem.groupBy({
+            by: ["productId"],
+            where: {
+                order: {
+                    createdAt: {
+                        gte: start,
+                        lte: end,
+                    },
+                    status: { in: ["PAID", "PROCESSING", "SHIPPED", "DELIVERED"] },
+                },
+            },
+            _count: {
+                productId: true,
+            },
+        });
+
+        const total = allOrderItems.length;
 
         const orderItems = await db.orderItem.groupBy({
             by: ["productId"],
@@ -80,7 +128,8 @@ export async function GET(request: NextRequest) {
                     quantity: "desc",
                 },
             },
-            take: 10,
+            skip,
+            take: pageSize,
         });
 
         const productIds = orderItems.map((o) => o.productId);
@@ -103,7 +152,17 @@ export async function GET(request: NextRequest) {
             };
         });
 
-        return NextResponse.json({ type: "sales", data, period: { start, end } });
+        return NextResponse.json({ 
+            type: "sales", 
+            data, 
+            period: { start, end },
+            pagination: {
+                page,
+                pageSize,
+                total,
+                totalPages: Math.ceil(total / pageSize),
+            }
+        });
     } catch (error) {
         console.error("Analytics error:", error);
         return NextResponse.json(

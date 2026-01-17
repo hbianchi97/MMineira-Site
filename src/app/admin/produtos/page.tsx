@@ -29,6 +29,7 @@ export default function AdminProducts() {
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -60,9 +61,17 @@ export default function AdminProducts() {
             if (res.ok) {
                 const data = await res.json();
                 setProducts(data);
+                setError(null);
+            } else if (res.status === 401) {
+                setError("Voce precisa estar logado para acessar esta pagina.");
+            } else if (res.status === 403) {
+                setError("Voce nao tem permissao para acessar esta pagina.");
+            } else {
+                setError("Erro ao carregar produtos.");
             }
         } catch (error) {
             console.error("Failed to fetch products:", error);
+            setError("Erro de conexao. Tente novamente.");
         } finally {
             setLoading(false);
         }
@@ -229,6 +238,13 @@ export default function AdminProducts() {
                 {loading ? (
                     <div className="p-8 text-center">
                         <div className="w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto" />
+                    </div>
+                ) : error ? (
+                    <div className="p-8 text-center">
+                        <p className="text-red-600 mb-4">{error}</p>
+                        <a href="/sign-in" className="text-amber-600 hover:underline">
+                            Fazer login
+                        </a>
                     </div>
                 ) : (
                     <table className="w-full">

@@ -1,7 +1,11 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-const ADMIN_EMAILS = ["admin@meninamineira.com.br"];
+const envAdminEmails = process.env.ADMIN_EMAILS || "";
+const ADMIN_EMAILS = [
+    "admin@meninamineira.com.br",
+    ...envAdminEmails.split(",").map(e => e.trim()).filter(Boolean)
+];
 
 export async function isAdmin(): Promise<boolean> {
     const { userId } = await auth();

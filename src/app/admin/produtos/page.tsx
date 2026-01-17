@@ -211,6 +211,32 @@ export default function AdminProducts() {
         }
     };
 
+    const parseColors = (colors: unknown): { name: string; hex: string }[] => {
+        if (Array.isArray(colors)) return colors;
+        if (typeof colors === "string") {
+            try {
+                const parsed = JSON.parse(colors);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch {
+                return [];
+            }
+        }
+        return [];
+    };
+
+    const parseShippingOptions = (options: unknown): string[] => {
+        if (Array.isArray(options)) return options;
+        if (typeof options === "string") {
+            try {
+                const parsed = JSON.parse(options);
+                return Array.isArray(parsed) ? parsed : ["envio", "retirada"];
+            } catch {
+                return ["envio", "retirada"];
+            }
+        }
+        return ["envio", "retirada"];
+    };
+
     const openEditModal = (product: Product) => {
         setEditingProduct(product);
         setFormData({
@@ -224,8 +250,8 @@ export default function AdminProducts() {
             categoryId: "",
             images: product.images.join(", "),
             sizes: "P, M, G, GG",
-            colors: product.colors || [],
-            shippingOptions: product.shippingOptions || ["envio", "retirada"],
+            colors: parseColors(product.colors),
+            shippingOptions: parseShippingOptions(product.shippingOptions),
             stock: product.stock.toString(),
             weight: "150",
             isNew: product.isNew,

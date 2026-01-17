@@ -76,11 +76,12 @@ export default async function Home() {
                                 </div>
                             </div>
                             <div className="relative">
-                                <div className="aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl">
+                                <div className="relative aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl">
                                     <Image
                                         src="https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80"
                                         alt="Modelo com biquíni Menina Mineira"
                                         fill
+                                        sizes="(max-width: 768px) 100vw, 50vw"
                                         className="object-cover"
                                         priority
                                     />
@@ -145,6 +146,7 @@ export default async function Home() {
                                         src={category.imageUrl || "https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=600&q=80"}
                                         alt={category.name}
                                         fill
+                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                         className="object-cover transition-transform duration-700 group-hover:scale-110"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />

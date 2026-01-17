@@ -48,12 +48,22 @@ prisma/
 - Página de produto com galeria de imagens
 - Filtros por tamanho e cor
 - Sistema de créditos para recursos AI
+- Páginas de login/registro (Clerk)
+- Checkout completo com PIX, cartão e boleto
+- Painel administrativo protegido (/admin)
+
+## Admin Panel (/admin)
+- Dashboard com estatísticas
+- CRUD de produtos
+- Configurações do site (hero banner)
+- Acesso restrito por email (admin@meninamineira.com.br)
 
 ## Scripts
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run db:push` - Push Prisma schema to database
 - `npm run db:migrate` - Run database migrations
+- `npm run db:seed` - Populate database with sample data
 
 ## Environment Variables
 - `DATABASE_URL` - PostgreSQL connection (auto-configured by Replit)
@@ -68,3 +78,8 @@ prisma/
 ## Recent Changes
 - Initial setup on Replit environment
 - Database synchronized with e-commerce schema
+- Added seed script with categories and products
+- Created login/signup pages with Clerk (custom styling)
+- Created complete checkout page with address form and payment options
+- Created admin panel with products management and site settings
+- Added server-side authorization for admin APIs

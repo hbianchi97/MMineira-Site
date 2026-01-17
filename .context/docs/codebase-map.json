@@ -1,0 +1,408 @@
+{
+  "version": "1.0.0",
+  "generated": "2026-01-17T18:09:08.702Z",
+  "stack": {
+    "primaryLanguage": "typescript",
+    "languages": [
+      "javascript",
+      "typescript"
+    ],
+    "frameworks": [
+      "nextjs"
+    ],
+    "buildTools": [],
+    "testFrameworks": [
+      "vitest",
+      "playwright"
+    ],
+    "packageManager": "npm",
+    "isMonorepo": false,
+    "hasDocker": false,
+    "hasCI": false
+  },
+  "structure": {
+    "totalFiles": 68,
+    "topDirectories": [
+      {
+        "name": "agents",
+        "fileCount": 7
+      },
+      {
+        "name": "AGENTS.md",
+        "fileCount": 1
+      },
+      {
+        "name": "CLAUDE.md",
+        "fileCount": 1
+      },
+      {
+        "name": "components.json",
+        "fileCount": 1
+      },
+      {
+        "name": "docs",
+        "fileCount": 17
+      },
+      {
+        "name": "eslint.config.mjs",
+        "fileCount": 1
+      },
+      {
+        "name": "h -u origin main",
+        "fileCount": 1
+      },
+      {
+        "name": "next-env.d.ts",
+        "fileCount": 1
+      },
+      {
+        "name": "next.config.ts",
+        "fileCount": 1
+      },
+      {
+        "name": "package-lock.json",
+        "fileCount": 1
+      },
+      {
+        "name": "package.json",
+        "fileCount": 1
+      },
+      {
+        "name": "plans",
+        "fileCount": 4
+      },
+      {
+        "name": "playwright.config.ts",
+        "fileCount": 1
+      },
+      {
+        "name": "postcss.config.mjs",
+        "fileCount": 1
+      },
+      {
+        "name": "prevc-template.md",
+        "fileCount": 1
+      },
+      {
+        "name": "prisma",
+        "fileCount": 1
+      },
+      {
+        "name": "public",
+        "fileCount": 1
+      },
+      {
+        "name": "README.md",
+        "fileCount": 1
+      },
+      {
+        "name": "replit.md",
+        "fileCount": 1
+      },
+      {
+        "name": "replit.nix",
+        "fileCount": 1
+      },
+      {
+        "name": "scripts",
+        "fileCount": 2
+      },
+      {
+        "name": "src",
+        "fileCount": 10
+      },
+      {
+        "name": "tailwind.config.ts",
+        "fileCount": 1
+      },
+      {
+        "name": "tests",
+        "fileCount": 8
+      },
+      {
+        "name": "tsconfig.json",
+        "fileCount": 1
+      },
+      {
+        "name": "vitest.config.ts",
+        "fileCount": 1
+      }
+    ],
+    "languageDistribution": [
+      {
+        "extension": ".md",
+        "count": 33
+      },
+      {
+        "extension": ".ts",
+        "count": 20
+      },
+      {
+        "extension": ".json",
+        "count": 4
+      },
+      {
+        "extension": ".mjs",
+        "count": 4
+      },
+      {
+        "extension": ".tsx",
+        "count": 2
+      },
+      {
+        "extension": ".nix",
+        "count": 1
+      },
+      {
+        "extension": ".prisma",
+        "count": 1
+      },
+      {
+        "extension": ".css",
+        "count": 1
+      },
+      {
+        "extension": ".svg",
+        "count": 1
+      }
+    ]
+  },
+  "architecture": {
+    "layers": [
+      {
+        "name": "Utils",
+        "description": "Shared utilities and helpers",
+        "directories": [
+          "src/lib"
+        ],
+        "symbolCount": 1,
+        "dependsOn": []
+      },
+      {
+        "name": "Controllers",
+        "description": "Request handling and routing",
+        "directories": [
+          "src/lib",
+          "src/app/api/health",
+          "src/app/api/webhooks/clerk"
+        ],
+        "symbolCount": 5,
+        "dependsOn": []
+      },
+      {
+        "name": "Components",
+        "description": "UI components and views",
+        "directories": [
+          "src/app"
+        ],
+        "symbolCount": 1,
+        "dependsOn": []
+      }
+    ],
+    "patterns": [],
+    "entryPoints": []
+  },
+  "symbols": {
+    "classes": [
+      {
+        "name": "ApiError",
+        "kind": "class",
+        "file": "src/lib/api-errors.ts",
+        "line": 4,
+        "exported": true
+      }
+    ],
+    "interfaces": [],
+    "functions": [
+      {
+        "name": "apiClient",
+        "kind": "function",
+        "file": "src/lib/api-client.ts",
+        "line": 3,
+        "exported": true
+      },
+      {
+        "name": "cn",
+        "kind": "function",
+        "file": "src/lib/utils.ts",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "GET",
+        "kind": "function",
+        "file": "src/app/api/health/route.ts",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "handleApiError",
+        "kind": "function",
+        "file": "src/lib/api-errors.ts",
+        "line": 14,
+        "exported": true
+      },
+      {
+        "name": "Home",
+        "kind": "function",
+        "file": "src/app/page.tsx",
+        "line": 1,
+        "exported": true
+      },
+      {
+        "name": "POST",
+        "kind": "function",
+        "file": "src/app/api/webhooks/clerk/route.ts",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "name": "RootLayout",
+        "kind": "function",
+        "file": "src/app/layout.tsx",
+        "line": 31,
+        "exported": true
+      },
+      {
+        "name": "buildConnectionUrl",
+        "kind": "function",
+        "file": "scripts/setup-postgres-docker.mjs",
+        "line": 70,
+        "exported": false
+      },
+      {
+        "name": "choosePort",
+        "kind": "function",
+        "file": "scripts/setup-postgres-docker.mjs",
+        "line": 34,
+        "exported": false
+      },
+      {
+        "name": "containerStatus",
+        "kind": "function",
+        "file": "scripts/setup-postgres-docker.mjs",
+        "line": 40,
+        "exported": false
+      },
+      {
+        "name": "ensureVolume",
+        "kind": "function",
+        "file": "scripts/setup-postgres-docker.mjs",
+        "line": 48,
+        "exported": false
+      },
+      {
+        "name": "hasDocker",
+        "kind": "function",
+        "file": "scripts/setup-postgres-docker.mjs",
+        "line": 25,
+        "exported": false
+      },
+      {
+        "name": "main",
+        "kind": "function",
+        "file": "scripts/setup-postgres-docker.mjs",
+        "line": 108,
+        "exported": false
+      },
+      {
+        "name": "printSummary",
+        "kind": "function",
+        "file": "scripts/setup-postgres-docker.mjs",
+        "line": 74,
+        "exported": false
+      },
+      {
+        "name": "runMigrations",
+        "kind": "function",
+        "file": "scripts/setup-postgres-docker.mjs",
+        "line": 89,
+        "exported": false
+      },
+      {
+        "name": "waitForReady",
+        "kind": "function",
+        "file": "scripts/setup-postgres-docker.mjs",
+        "line": 57,
+        "exported": false
+      }
+    ],
+    "types": [],
+    "enums": []
+  },
+  "publicAPI": [
+    {
+      "name": "apiClient",
+      "kind": "function",
+      "file": "src/lib/api-client.ts",
+      "line": 3,
+      "exported": true
+    },
+    {
+      "name": "ApiError",
+      "kind": "class",
+      "file": "src/lib/api-errors.ts",
+      "line": 4,
+      "exported": true
+    },
+    {
+      "name": "cn",
+      "kind": "function",
+      "file": "src/lib/utils.ts",
+      "line": 4,
+      "exported": true
+    },
+    {
+      "name": "GET",
+      "kind": "function",
+      "file": "src/app/api/health/route.ts",
+      "line": 4,
+      "exported": true
+    },
+    {
+      "name": "handleApiError",
+      "kind": "function",
+      "file": "src/lib/api-errors.ts",
+      "line": 14,
+      "exported": true
+    },
+    {
+      "name": "Home",
+      "kind": "function",
+      "file": "src/app/page.tsx",
+      "line": 1,
+      "exported": true
+    },
+    {
+      "name": "POST",
+      "kind": "function",
+      "file": "src/app/api/webhooks/clerk/route.ts",
+      "line": 6,
+      "exported": true
+    },
+    {
+      "name": "RootLayout",
+      "kind": "function",
+      "file": "src/app/layout.tsx",
+      "line": 31,
+      "exported": true
+    }
+  ],
+  "dependencies": {
+    "mostImported": [
+      {
+        "file": "/home/runner/workspace/src/lib/api-errors.ts",
+        "importedBy": 1
+      },
+      {
+        "file": "/home/runner/workspace/src/app/globals.css",
+        "importedBy": 1
+      }
+    ]
+  },
+  "stats": {
+    "totalSymbols": 17,
+    "exportedSymbols": 8,
+    "analysisTimeMs": 155
+  }
+}

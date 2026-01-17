@@ -1,0 +1,194 @@
+@import "tailwindcss";
+
+/* Menina Mineira - Design System */
+/* Paleta: Dourado (#B8860B), Marrom quente, Tons de praia */
+
+:root {
+  /* Cores principais da marca */
+  --gold: 43 87% 38%;           /* #B8860B - Dourado da marca */
+  --gold-light: 43 80% 55%;     /* Dourado claro */
+  --gold-dark: 35 70% 28%;      /* Dourado escuro */
+  --warm-brown: 25 45% 25%;     /* Marrom quente */
+  --sand: 35 40% 92%;           /* Cor areia */
+  --ocean: 195 70% 45%;         /* Azul oceano */
+  --ocean-light: 195 65% 85%;   /* Azul oceano claro */
+  --coral: 16 85% 60%;          /* Coral/sunset */
+  --palm: 140 45% 35%;          /* Verde palmeira */
+
+  /* Sistema de cores - Light Mode */
+  --background: 35 30% 98%;
+  --foreground: 25 25% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 25 25% 15%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 25 25% 15%;
+  --primary: 43 87% 38%;        /* Dourado */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 35 40% 92%;      /* Areia */
+  --secondary-foreground: 25 25% 15%;
+  --muted: 35 20% 94%;
+  --muted-foreground: 25 15% 45%;
+  --accent: 195 70% 45%;        /* Oceano */
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 35 25% 88%;
+  --input: 35 25% 88%;
+  --ring: 43 87% 38%;           /* Dourado */
+  --chart-1: 43 87% 38%;        /* Dourado */
+  --chart-2: 195 70% 45%;       /* Oceano */
+  --chart-3: 16 85% 60%;        /* Coral */
+  --chart-4: 140 45% 35%;       /* Verde */
+  --chart-5: 25 45% 25%;        /* Marrom */
+  --radius: 0.625rem;
+}
+
+.dark {
+  --background: 25 20% 8%;
+  --foreground: 35 30% 95%;
+  --card: 25 18% 12%;
+  --card-foreground: 35 30% 95%;
+  --popover: 25 18% 12%;
+  --popover-foreground: 35 30% 95%;
+  --primary: 43 80% 50%;        /* Dourado mais vibrante no dark */
+  --primary-foreground: 25 25% 10%;
+  --secondary: 25 15% 18%;
+  --secondary-foreground: 35 30% 95%;
+  --muted: 25 15% 18%;
+  --muted-foreground: 35 20% 60%;
+  --accent: 195 60% 50%;        /* Oceano */
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 62% 40%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 25 15% 20%;
+  --input: 25 15% 20%;
+  --ring: 43 80% 50%;
+  --chart-1: 43 80% 55%;
+  --chart-2: 195 60% 55%;
+  --chart-3: 16 80% 65%;
+  --chart-4: 140 50% 45%;
+  --chart-5: 35 50% 40%;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  
+  /* Brand colors */
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-dark: var(--gold-dark);
+  --color-warm-brown: var(--warm-brown);
+  --color-sand: var(--sand);
+  --color-ocean: var(--ocean);
+  --color-ocean-light: var(--ocean-light);
+  --color-coral: var(--coral);
+  --color-palm: var(--palm);
+  
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Selection color matching brand */
+  ::selection {
+    background-color: hsl(43 87% 38% / 0.3);
+    color: hsl(25 25% 15%);
+  }
+}
+
+@layer utilities {
+  /* Glassmorphism effects */
+  .glass {
+    backdrop-filter: blur(16px);
+    background: hsl(var(--background) / 0.7);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+  
+  .glass-gold {
+    backdrop-filter: blur(16px);
+    background: hsl(43 87% 38% / 0.1);
+    border: 1px solid hsl(43 87% 38% / 0.3);
+  }
+  
+  /* Gold gradient for CTAs */
+  .gradient-gold {
+    background: linear-gradient(135deg, hsl(43 87% 42%) 0%, hsl(35 70% 32%) 100%);
+  }
+  
+  /* Ocean gradient for accents */
+  .gradient-ocean {
+    background: linear-gradient(135deg, hsl(195 70% 50%) 0%, hsl(195 70% 35%) 100%);
+  }
+  
+  /* Sunset/beach gradient for hero sections */
+  .gradient-sunset {
+    background: linear-gradient(180deg, hsl(35 60% 95%) 0%, hsl(16 85% 92%) 50%, hsl(195 65% 90%) 100%);
+  }
+  
+  /* Text gradient for headings */
+  .text-gradient-gold {
+    background: linear-gradient(135deg, hsl(43 87% 45%) 0%, hsl(35 70% 35%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Hover transition */
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -8px hsl(25 25% 15% / 0.15);
+  }
+  
+  /* Image hover effect for product cards */
+  .img-hover-zoom {
+    overflow: hidden;
+  }
+  .img-hover-zoom img {
+    transition: transform 0.5s ease;
+  }
+  .img-hover-zoom:hover img {
+    transform: scale(1.05);
+  }
+}
+

@@ -20,7 +20,15 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'plus.unsplash.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'html.tailus.io',
+      },
+      {
+        protocol: 'https',
+        hostname: '**',
       },
     ],
   },

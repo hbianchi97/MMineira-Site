@@ -13,6 +13,7 @@ import {
     Save,
     Image as ImageIcon,
 } from "lucide-react";
+import ImageUploader from "@/components/admin/ImageUploader";
 
 interface Post {
     id: string;
@@ -297,30 +298,13 @@ export default function AdminNovidades() {
                                 />
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium mb-1">
-                                    URL da Imagem
-                                </label>
-                                <input
-                                    type="text"
-                                    value={formData.imageUrl}
-                                    onChange={(e) =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            imageUrl: e.target.value,
-                                        }))
-                                    }
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500"
-                                    placeholder="https://..."
-                                />
-                                {formData.imageUrl && (
-                                    <img
-                                        src={formData.imageUrl}
-                                        alt="Preview"
-                                        className="mt-2 h-32 w-full object-cover rounded-lg"
-                                    />
-                                )}
-                            </div>
+                            <ImageUploader
+                                value={formData.imageUrl}
+                                onChange={(url) =>
+                                    setFormData((prev) => ({ ...prev, imageUrl: url }))
+                                }
+                                label="Imagem da Novidade"
+                            />
 
                             <div>
                                 <label className="block text-sm font-medium mb-1">

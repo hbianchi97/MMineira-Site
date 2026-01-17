@@ -12,6 +12,9 @@ const navigation = [
     { name: "Biquínis", href: "/categoria/biquinis" },
     { name: "Maiôs", href: "/categoria/maios" },
     { name: "Saídas de Praia", href: "/categoria/saidas-de-praia" },
+    { name: "Acessórios", href: "/categoria/acessorios" },
+    { name: "Cangas", href: "/categoria/cangas" },
+    { name: "Bolsas", href: "/categoria/bolsas" },
     { name: "Novidades", href: "/novidades" },
 ];
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Save, Image as ImageIcon, Loader2, Check, Home, Waves } from "lucide-react";
+import ImageUploader from "@/components/admin/ImageUploader";
 
 interface PageConfig {
     pageKey: string;
@@ -44,6 +45,30 @@ const defaultConfigs: PageConfig[] = [
         title: "Saidas de Praia",
         subtitle: "",
         description: "Saidas de praia leves e estilosas para arrasar no verao",
+    },
+    {
+        pageKey: "acessorios",
+        label: "Acessorios",
+        imageUrl: "https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80",
+        title: "Acessorios",
+        subtitle: "",
+        description: "Acessorios de praia como oculos, chapeus e joias",
+    },
+    {
+        pageKey: "cangas",
+        label: "Canga de Praia",
+        imageUrl: "https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80",
+        title: "Canga de Praia",
+        subtitle: "",
+        description: "Cangas de praia com estampas exclusivas",
+    },
+    {
+        pageKey: "bolsas",
+        label: "Bolsas",
+        imageUrl: "https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80",
+        title: "Bolsas",
+        subtitle: "",
+        description: "Bolsas de praia praticas e estilosas",
     },
 ];
 
@@ -152,20 +177,13 @@ export default function AdminSettings() {
                     </h2>
 
                     <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium mb-1">
-                                URL da Imagem Principal
-                            </label>
-                            <input
-                                type="text"
-                                value={activeConfig.imageUrl}
-                                onChange={(e) =>
-                                    updateConfig(activeConfig.pageKey, "imageUrl", e.target.value)
-                                }
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500"
-                                placeholder="https://..."
-                            />
-                        </div>
+                        <ImageUploader
+                            value={activeConfig.imageUrl}
+                            onChange={(url) =>
+                                updateConfig(activeConfig.pageKey, "imageUrl", url)
+                            }
+                            label="Imagem Principal"
+                        />
 
                         {activeConfig.imageUrl && (
                             <div className="relative aspect-[21/9] rounded-lg overflow-hidden bg-gray-100">

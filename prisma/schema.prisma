@@ -319,3 +319,15 @@ model Post {
   @@index([slug])
 }
 
+model ProductView {
+  id        String   @id @default(cuid())
+  productId String
+  sessionId String?
+  userId    String?
+  viewedAt  DateTime @default(now())
+
+  @@index([productId])
+  @@index([viewedAt])
+  @@index([productId, viewedAt])
+}
+

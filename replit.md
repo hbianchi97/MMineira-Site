@@ -36,13 +36,14 @@ prisma/
 ```
 
 ## E-commerce Models
-- **Category**: Categorias de produtos (Biquinis, Maios, Saidas de Praia)
+- **Category**: Categorias de produtos (Biquinis, Maios, Saidas de Praia, Acessorios, Cangas, Bolsas)
 - **Product**: Produtos com preco, imagens, tamanhos, cores, estoque
 - **Cart/CartItem**: Carrinho de compras
 - **Order/OrderItem**: Pedidos
 - **Address**: Enderecos de entrega
 - **SiteConfig**: Configuracoes de paginas (imagem, titulo, descricao)
 - **Post**: Novidades/noticias do blog
+- **ProductView**: Tracking de visualizacoes de produtos para analytics
 
 ## Key Features
 - Catálogo de produtos com categorias
@@ -53,17 +54,22 @@ prisma/
 - Páginas de login/registro (Clerk)
 - Checkout completo com PIX, cartão e boleto
 - Painel administrativo protegido (/admin)
+- Upload de imagens do computador (Object Storage)
+- Dashboard de analytics (produtos mais vendidos/acessados)
 
 ## Admin Panel (/admin)
-- Dashboard com estatisticas
-- CRUD de produtos
+- Visao Geral com estatisticas
+- Dashboard de Analytics (/admin/dashboard) com graficos de:
+  - Produtos mais vendidos
+  - Produtos mais acessados
+  - Periodo personalizavel
+- CRUD de produtos com upload de imagens
 - Gerenciamento de Novidades (posts/noticias)
 - Configuracoes do site por pagina (imagem, titulo, descricao)
   - Pagina Inicial (home)
-  - Biquinis
-  - Maios
-  - Saidas de Praia
-- Acesso restrito por email (admin@meninamineira.com.br)
+  - Biquinis, Maios, Saidas de Praia
+  - Acessorios, Cangas, Bolsas
+- Acesso restrito por email (ADMIN_EMAILS env var)
 
 ## Scripts
 - `npm run dev` - Start development server
@@ -97,3 +103,7 @@ prisma/
 - Created public /novidades page with post listing
 - Created post detail page at /novidades/[slug]
 - Pages now use dynamic content from database
+- Implemented image upload from computer (Object Storage integration)
+- Created Analytics Dashboard with customizable time period
+- Added new product categories: Acessorios, Canga de Praia, Bolsas
+- Added ProductView model for tracking product views

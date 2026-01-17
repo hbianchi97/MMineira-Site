@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Plus, Pencil, Trash2, Search, X } from "lucide-react";
+import MultiImageUploader from "@/components/admin/MultiImageUploader";
 
 interface Product {
     id: string;
@@ -472,19 +473,13 @@ export default function AdminProducts() {
                                 </div>
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium mb-1">
-                                    URLs das Imagens (separadas por vírgula)
-                                </label>
-                                <input
-                                    type="text"
-                                    value={formData.images}
-                                    onChange={(e) =>
-                                        setFormData({ ...formData, images: e.target.value })
-                                    }
-                                    className="w-full px-4 py-2 border rounded-lg"
-                                />
-                            </div>
+                            <MultiImageUploader
+                                value={formData.images}
+                                onChange={(images) =>
+                                    setFormData({ ...formData, images })
+                                }
+                                label="Imagens do Produto"
+                            />
 
                             <div className="grid sm:grid-cols-2 gap-4">
                                 <div>

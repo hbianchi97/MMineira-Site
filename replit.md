@@ -107,3 +107,10 @@ prisma/
 - Created Analytics Dashboard with customizable time period
 - Added new product categories: Acessorios, Canga de Praia, Bolsas
 - Added ProductView model for tracking product views
+- Added color palette selection in product modal (20 colors + Estampado/Cor Unica)
+- Added shipping options (envio/retirada) for products
+- Implemented automatic product view tracking on page access
+- Created test data generation endpoint for analytics (/api/admin/seed-analytics)
+- Updated admin quick actions button to link to Analytics Dashboard
+- Added multi-image support in Site Config (array of images)
+- Added total count display in analytics dashboard

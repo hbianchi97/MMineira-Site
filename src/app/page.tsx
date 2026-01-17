@@ -76,13 +76,13 @@ export default async function Home() {
                     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
                         <div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
                             <div className="flex flex-col justify-center">
-                                <span className="mb-4 inline-block w-fit rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-                                    {hero.subtitle}
+                                <span className="mb-4 inline-block w-fit rounded-full gradient-gold px-5 py-2 text-sm font-semibold text-white shadow-md animate-pulse">
+                                    ✨ {hero.subtitle}
                                 </span>
-                                <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-                                    {hero.title}
+                                <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+                                    <span className="text-gradient-gold drop-shadow-sm">{hero.title}</span>
                                 </h1>
-                                <p className="mb-8 max-w-lg text-lg text-muted-foreground">
+                                <p className="mb-8 max-w-lg text-lg leading-relaxed text-foreground/80 font-medium">
                                     {hero.description}
                                 </p>
                                 <div className="flex flex-wrap gap-4">

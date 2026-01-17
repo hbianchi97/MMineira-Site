@@ -9,6 +9,7 @@ import {
     getCategoryBySlug,
     getProductsByCategory,
     parseProductImages,
+    parseProductColors,
 } from "@/lib/shop-data";
 import { ProductFilters } from "./ProductFilters";
 
@@ -28,18 +29,21 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     }
 
     // Transform products for the client component
-    const productsForClient = products.map((product) => ({
-        id: product.id,
-        name: product.name,
-        slug: product.slug,
-        price: product.price,
-        comparePrice: product.comparePrice ?? undefined,
-        images: parseProductImages(product.images),
-        isNew: product.isNew,
-        isSoldOut: product.stock === 0,
-        sizes: product.sizes,
-        colors: product.colors as { name: string; hex: string }[] | null,
-    }));
+    const productsForClient = products.map((product) => {
+        const parsedColors = parseProductColors(product.colors);
+        return {
+            id: product.id,
+            name: product.name,
+            slug: product.slug,
+            price: product.price,
+            comparePrice: product.comparePrice ?? undefined,
+            images: parseProductImages(product.images),
+            isNew: product.isNew,
+            isSoldOut: product.stock === 0,
+            sizes: product.sizes,
+            colors: parsedColors.length > 0 ? parsedColors : null,
+        };
+    });
 
     return (
         <div className="flex min-h-screen flex-col">

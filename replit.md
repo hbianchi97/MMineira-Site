@@ -114,3 +114,7 @@ prisma/
 - Updated admin quick actions button to link to Analytics Dashboard
 - Added multi-image support in Site Config (array of images)
 - Added total count display in analytics dashboard
+- Fixed post detail page layout (button and date side by side)
+- Enhanced test data generation with customizable quantity modal
+- Added "Zerar Dados" button with confirmation and data logging
+- Added shipping method selection in checkout (delivery vs pickup with free shipping)

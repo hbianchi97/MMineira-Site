@@ -48,6 +48,7 @@ const AVAILABLE_COLORS = [
     { name: "Dourado", hex: "#FFD700" },
     { name: "Prata", hex: "#C0C0C0" },
     { name: "Estampado", hex: "linear-gradient(45deg, #E91E63, #4FC3F7, #FDD835)" },
+    { name: "Multicolorido", hex: "linear-gradient(90deg, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #8B00FF)" },
     { name: "Cor Unica", hex: "#9E9E9E" },
 ];
 

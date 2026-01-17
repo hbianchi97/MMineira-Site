@@ -10,6 +10,7 @@ import {
     Settings,
     ArrowLeft,
     Store,
+    Newspaper,
 } from "lucide-react";
 
 const adminEmails = ["admin@meninamineira.com.br"];
@@ -44,7 +45,8 @@ export default function AdminLayout({
     const navItems = [
         { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
         { href: "/admin/produtos", label: "Produtos", icon: Package },
-        { href: "/admin/configuracoes", label: "Configurações", icon: Settings },
+        { href: "/admin/novidades", label: "Novidades", icon: Newspaper },
+        { href: "/admin/configuracoes", label: "Configuracoes", icon: Settings },
     ];
 
     return (

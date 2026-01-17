@@ -8,12 +8,13 @@ import {
     getCategories,
     getFeaturedProducts,
     parseProductImages,
+    getSiteConfig,
 } from "@/lib/shop-data";
 
 const benefits = [
     {
         icon: Truck,
-        title: "Frete Grátis",
+        title: "Frete Gratis",
         description: "Para compras acima de R$ 299",
     },
     {
@@ -24,15 +25,30 @@ const benefits = [
     {
         icon: CreditCard,
         title: "Parcelamento",
-        description: "Em até 6x sem juros",
+        description: "Em ate 6x sem juros",
     },
 ];
 
+const defaultHomeConfig = {
+    imageUrl: "https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80",
+    subtitle: "Nova Colecao 2026",
+    title: "Moda Praia Exclusiva do Rio",
+    description: "Descubra pecas unicas com estampas autorais. Biquinis, maios e saidas de praia que realcam sua beleza natural.",
+};
+
 export default async function Home() {
-    const [categories, featuredProducts] = await Promise.all([
+    const [categories, featuredProducts, homeConfig] = await Promise.all([
         getCategories(),
         getFeaturedProducts(4),
+        getSiteConfig("home"),
     ]);
+
+    const hero = {
+        imageUrl: homeConfig?.imageUrl || defaultHomeConfig.imageUrl,
+        subtitle: homeConfig?.subtitle || defaultHomeConfig.subtitle,
+        title: homeConfig?.title || defaultHomeConfig.title,
+        description: homeConfig?.description || defaultHomeConfig.description,
+    };
 
     return (
         <div className="flex min-h-screen flex-col">
@@ -45,19 +61,13 @@ export default async function Home() {
                         <div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
                             <div className="flex flex-col justify-center">
                                 <span className="mb-4 inline-block w-fit rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-                                    Nova Coleção 2026
+                                    {hero.subtitle}
                                 </span>
                                 <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-                                    Moda Praia{" "}
-                                    <span className="text-gradient-gold">
-                                        Exclusiva
-                                    </span>{" "}
-                                    do Rio
+                                    {hero.title}
                                 </h1>
                                 <p className="mb-8 max-w-lg text-lg text-muted-foreground">
-                                    Descubra peças únicas com estampas autorais.
-                                    Biquínis, maiôs e saídas de praia que
-                                    realçam sua beleza natural.
+                                    {hero.description}
                                 </p>
                                 <div className="flex flex-wrap gap-4">
                                     <Link
@@ -71,15 +81,15 @@ export default async function Home() {
                                         href="/categoria/biquinis"
                                         className="inline-flex items-center gap-2 rounded-full border-2 border-primary bg-transparent px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
                                     >
-                                        Explorar Coleção
+                                        Explorar Colecao
                                     </Link>
                                 </div>
                             </div>
                             <div className="relative">
                                 <div className="relative aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl">
                                     <Image
-                                        src="https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80"
-                                        alt="Modelo com biquíni Menina Mineira"
+                                        src={hero.imageUrl}
+                                        alt="Menina Mineira - Moda Praia"
                                         fill
                                         sizes="(max-width: 768px) 100vw, 50vw"
                                         className="object-cover"

@@ -116,3 +116,37 @@ export function parseProductColors(colors: unknown): ProductColor[] {
     }
     return [];
 }
+
+// Site Configuration
+export async function getSiteConfig(pageKey: string) {
+    return db.siteConfig.findUnique({
+        where: { pageKey },
+    });
+}
+
+export async function getAllSiteConfigs() {
+    return db.siteConfig.findMany();
+}
+
+// Posts / Novidades
+export async function getPublishedPosts(limit?: number) {
+    return db.post.findMany({
+        where: { isPublished: true },
+        orderBy: { publishedAt: "desc" },
+        take: limit,
+    });
+}
+
+export async function getFeaturedPosts(limit = 3) {
+    return db.post.findMany({
+        where: { isPublished: true, isFeatured: true },
+        orderBy: { publishedAt: "desc" },
+        take: limit,
+    });
+}
+
+export async function getPostBySlug(slug: string) {
+    return db.post.findUnique({
+        where: { slug },
+    });
+}

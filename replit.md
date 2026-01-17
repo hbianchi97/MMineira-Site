@@ -36,11 +36,13 @@ prisma/
 ```
 
 ## E-commerce Models
-- **Category**: Categorias de produtos (Biquínis, Maiôs, Saídas de Praia)
-- **Product**: Produtos com preço, imagens, tamanhos, cores, estoque
+- **Category**: Categorias de produtos (Biquinis, Maios, Saidas de Praia)
+- **Product**: Produtos com preco, imagens, tamanhos, cores, estoque
 - **Cart/CartItem**: Carrinho de compras
 - **Order/OrderItem**: Pedidos
-- **Address**: Endereços de entrega
+- **Address**: Enderecos de entrega
+- **SiteConfig**: Configuracoes de paginas (imagem, titulo, descricao)
+- **Post**: Novidades/noticias do blog
 
 ## Key Features
 - Catálogo de produtos com categorias
@@ -53,9 +55,14 @@ prisma/
 - Painel administrativo protegido (/admin)
 
 ## Admin Panel (/admin)
-- Dashboard com estatísticas
+- Dashboard com estatisticas
 - CRUD de produtos
-- Configurações do site (hero banner)
+- Gerenciamento de Novidades (posts/noticias)
+- Configuracoes do site por pagina (imagem, titulo, descricao)
+  - Pagina Inicial (home)
+  - Biquinis
+  - Maios
+  - Saidas de Praia
 - Acesso restrito por email (admin@meninamineira.com.br)
 
 ## Scripts
@@ -83,3 +90,10 @@ prisma/
 - Created complete checkout page with address form and payment options
 - Created admin panel with products management and site settings
 - Added server-side authorization for admin APIs
+- Added SiteConfig model for dynamic page content
+- Added Post model for news/blog functionality
+- Created admin page for site configurations (per page)
+- Created admin page for managing posts/novidades
+- Created public /novidades page with post listing
+- Created post detail page at /novidades/[slug]
+- Pages now use dynamic content from database

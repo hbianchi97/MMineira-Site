@@ -284,3 +284,38 @@ model Address {
   @@index([userId])
 }
 
+// ==========================================
+// SITE CONFIGURATION - Conteúdo dinâmico
+// ==========================================
+
+model SiteConfig {
+  id        String   @id @default(cuid())
+  pageKey   String   @unique // "home", "biquinis", "maios", "saidas-de-praia"
+  imageUrl  String?
+  title     String?
+  subtitle  String?
+  description String? @db.Text
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([pageKey])
+}
+
+model Post {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String?  @db.Text
+  content     String?  @db.Text
+  imageUrl    String?
+  isPublished Boolean  @default(false)
+  isFeatured  Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isPublished, publishedAt])
+  @@index([slug])
+}
+

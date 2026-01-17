@@ -4,12 +4,12 @@ import Image from "next/image";
 import { ChevronLeft } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { ProductCard } from "@/components/shop/ProductCard";
 import {
     getCategoryBySlug,
     getProductsByCategory,
     parseProductImages,
     parseProductColors,
+    getSiteConfig,
 } from "@/lib/shop-data";
 import { ProductFilters } from "./ProductFilters";
 
@@ -27,6 +27,18 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     if (!category) {
         notFound();
     }
+    
+    const pageKeyMap: Record<string, string> = {
+        "biquinis": "biquinis",
+        "maios": "maios",
+        "saidas-de-praia": "saidas-de-praia",
+    };
+    const pageKey = pageKeyMap[slug] || slug;
+    const siteConfig = await getSiteConfig(pageKey);
+    
+    const heroImage = siteConfig?.imageUrl || category.imageUrl || "https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=1200&q=80";
+    const heroTitle = siteConfig?.title || category.name;
+    const heroDescription = siteConfig?.description || category.description;
 
     // Transform products for the client component
     const productsForClient = products.map((product) => {
@@ -53,9 +65,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                 {/* Hero Banner */}
                 <section className="relative h-[300px] overflow-hidden sm:h-[400px]">
                     <Image
-                        src={category.imageUrl || "https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=1200&q=80"}
-                        alt={category.name}
+                        src={heroImage}
+                        alt={heroTitle}
                         fill
+                        sizes="100vw"
                         className="object-cover"
                         priority
                     />
@@ -70,10 +83,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                                 Voltar
                             </Link>
                             <h1 className="text-3xl font-bold text-white sm:text-5xl">
-                                {category.name}
+                                {heroTitle}
                             </h1>
                             <p className="mt-2 max-w-xl text-white/80">
-                                {category.description}
+                                {heroDescription}
                             </p>
                         </div>
                     </div>

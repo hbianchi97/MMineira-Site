@@ -8,8 +8,8 @@ import {
     Loader2,
     Calendar,
     TrendingUp,
+    Database,
 } from "lucide-react";
-import Image from "next/image";
 
 interface ProductAnalytics {
     productId: string;
@@ -41,6 +41,8 @@ export default function AnalyticsDashboard() {
     const [data, setData] = useState<ProductAnalytics[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [seeding, setSeeding] = useState(false);
+    const [seedMessage, setSeedMessage] = useState<string | null>(null);
 
     useEffect(() => {
         fetchAnalytics();
@@ -81,6 +83,30 @@ export default function AnalyticsDashboard() {
     };
 
     const maxCount = Math.max(...data.map((d) => d.count), 1);
+    const totalCount = data.reduce((sum, d) => sum + d.count, 0);
+
+    const handleSeedData = async () => {
+        if (!confirm("Isso ira gerar 300 vendas e 500 visualizacoes de teste. Continuar?")) return;
+
+        setSeeding(true);
+        setSeedMessage(null);
+
+        try {
+            const res = await fetch("/api/admin/seed-analytics", { method: "POST" });
+            const result = await res.json();
+
+            if (res.ok) {
+                setSeedMessage(result.message);
+                fetchAnalytics();
+            } else {
+                setSeedMessage(result.error || "Erro ao gerar dados");
+            }
+        } catch (err) {
+            setSeedMessage("Erro de conexao");
+        } finally {
+            setSeeding(false);
+        }
+    };
 
     const getDisplayUrl = (url: string | null) => {
         if (!url) return null;
@@ -104,7 +130,25 @@ export default function AnalyticsDashboard() {
                     <BarChart3 className="h-7 w-7 text-amber-600" />
                     Dashboard de Analytics
                 </h1>
+                <button
+                    onClick={handleSeedData}
+                    disabled={seeding}
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition disabled:opacity-50"
+                >
+                    {seeding ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                        <Database className="h-4 w-4" />
+                    )}
+                    Gerar Dados de Teste
+                </button>
             </div>
+
+            {seedMessage && (
+                <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+                    {seedMessage}
+                </div>
+            )}
 
             <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
                 <div className="flex flex-wrap items-center gap-4">
@@ -151,11 +195,19 @@ export default function AnalyticsDashboard() {
                     </div>
                 </div>
 
-                <div className="mt-4 flex items-center gap-2 text-sm text-gray-500">
-                    <TrendingUp className="h-4 w-4" />
-                    <span>
-                        Mostrando {analyticsType === "sales" ? "produtos mais vendidos" : "produtos mais acessados"} nos ultimos {formatDateRange()}
-                    </span>
+                <div className="mt-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <TrendingUp className="h-4 w-4" />
+                        <span>
+                            Mostrando {analyticsType === "sales" ? "produtos mais vendidos" : "produtos mais acessados"} nos ultimos {formatDateRange()}
+                        </span>
+                    </div>
+                    <div className="text-right">
+                        <p className="text-2xl font-bold text-amber-600">{totalCount}</p>
+                        <p className="text-xs text-gray-500">
+                            {analyticsType === "sales" ? "vendas totais" : "visualizacoes totais"}
+                        </p>
+                    </div>
                 </div>
             </div>
 

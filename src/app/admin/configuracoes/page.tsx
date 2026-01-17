@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { Save, Image as ImageIcon, Loader2, Check, Home, Waves } from "lucide-react";
-import ImageUploader from "@/components/admin/ImageUploader";
+import MultiImageUploader from "@/components/admin/MultiImageUploader";
 
 interface PageConfig {
     pageKey: string;
     label: string;
+    images: string[];
     imageUrl: string;
     title: string;
     subtitle: string;
@@ -17,6 +18,7 @@ const defaultConfigs: PageConfig[] = [
     {
         pageKey: "home",
         label: "Pagina Inicial",
+        images: ["https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80"],
         imageUrl: "https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80",
         title: "Nova Colecao 2026",
         subtitle: "Moda Praia Exclusiva do Rio",
@@ -25,6 +27,7 @@ const defaultConfigs: PageConfig[] = [
     {
         pageKey: "biquinis",
         label: "Biquinis",
+        images: ["https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80"],
         imageUrl: "https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80",
         title: "Biquinis",
         subtitle: "",
@@ -33,6 +36,7 @@ const defaultConfigs: PageConfig[] = [
     {
         pageKey: "maios",
         label: "Maios",
+        images: ["https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80"],
         imageUrl: "https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80",
         title: "Maios",
         subtitle: "",
@@ -41,6 +45,7 @@ const defaultConfigs: PageConfig[] = [
     {
         pageKey: "saidas-de-praia",
         label: "Saidas de Praia",
+        images: ["https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80"],
         imageUrl: "https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80",
         title: "Saidas de Praia",
         subtitle: "",
@@ -49,6 +54,7 @@ const defaultConfigs: PageConfig[] = [
     {
         pageKey: "acessorios",
         label: "Acessorios",
+        images: ["https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80"],
         imageUrl: "https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80",
         title: "Acessorios",
         subtitle: "",
@@ -57,6 +63,7 @@ const defaultConfigs: PageConfig[] = [
     {
         pageKey: "cangas",
         label: "Canga de Praia",
+        images: ["https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80"],
         imageUrl: "https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80",
         title: "Canga de Praia",
         subtitle: "",
@@ -65,12 +72,25 @@ const defaultConfigs: PageConfig[] = [
     {
         pageKey: "bolsas",
         label: "Bolsas",
+        images: ["https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80"],
         imageUrl: "https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?w=800&q=80",
         title: "Bolsas",
         subtitle: "",
         description: "Bolsas de praia praticas e estilosas",
     },
 ];
+
+function parseImages(images: unknown): string[] {
+    if (Array.isArray(images)) return images;
+    if (typeof images === "string") {
+        try {
+            return JSON.parse(images);
+        } catch {
+            return images ? [images] : [];
+        }
+    }
+    return [];
+}
 
 export default function AdminSettings() {
     const [configs, setConfigs] = useState<PageConfig[]>(defaultConfigs);
@@ -91,7 +111,15 @@ export default function AdminSettings() {
                 if (data.length > 0) {
                     const merged = defaultConfigs.map((dc) => {
                         const saved = data.find((d: PageConfig) => d.pageKey === dc.pageKey);
-                        return saved ? { ...dc, ...saved } : dc;
+                        if (saved) {
+                            const images = parseImages(saved.images);
+                            return {
+                                ...dc,
+                                ...saved,
+                                images: images.length > 0 ? images : (saved.imageUrl ? [saved.imageUrl] : dc.images),
+                            };
+                        }
+                        return dc;
                     });
                     setConfigs(merged);
                 }
@@ -103,7 +131,7 @@ export default function AdminSettings() {
         }
     };
 
-    const updateConfig = (pageKey: string, field: keyof PageConfig, value: string) => {
+    const updateConfig = (pageKey: string, field: keyof PageConfig, value: string | string[]) => {
         setConfigs((prev) =>
             prev.map((c) => (c.pageKey === pageKey ? { ...c, [field]: value } : c))
         );
@@ -118,7 +146,14 @@ export default function AdminSettings() {
             const res = await fetch("/api/admin/site-config", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(config),
+                body: JSON.stringify({
+                    pageKey: config.pageKey,
+                    images: config.images,
+                    imageUrl: config.images[0] || config.imageUrl,
+                    title: config.title,
+                    subtitle: config.subtitle,
+                    description: config.description,
+                }),
             });
 
             if (res.ok) {
@@ -177,18 +212,19 @@ export default function AdminSettings() {
                     </h2>
 
                     <div className="space-y-4">
-                        <ImageUploader
-                            value={activeConfig.imageUrl}
-                            onChange={(url) =>
-                                updateConfig(activeConfig.pageKey, "imageUrl", url)
-                            }
-                            label="Imagem Principal"
+                        <MultiImageUploader
+                            value={activeConfig.images.join(", ")}
+                            onChange={(imagesStr) => {
+                                const images = imagesStr.split(",").map((s) => s.trim()).filter(Boolean);
+                                updateConfig(activeConfig.pageKey, "images", images);
+                            }}
+                            label="Imagens da Pagina"
                         />
 
-                        {activeConfig.imageUrl && (
+                        {activeConfig.images.length > 0 && activeConfig.images[0] && (
                             <div className="relative aspect-[21/9] rounded-lg overflow-hidden bg-gray-100">
                                 <img
-                                    src={activeConfig.imageUrl}
+                                    src={activeConfig.images[0]}
                                     alt={`Preview ${activeConfig.label}`}
                                     className="w-full h-full object-cover"
                                 />
@@ -205,6 +241,16 @@ export default function AdminSettings() {
                                         <p className="text-white/80">{activeConfig.description}</p>
                                     </div>
                                 </div>
+                            </div>
+                        )}
+
+                        {activeConfig.images.length > 1 && (
+                            <div className="grid grid-cols-4 gap-2">
+                                {activeConfig.images.slice(1).map((img, idx) => (
+                                    <div key={idx} className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                                        <img src={img} alt={`Imagem ${idx + 2}`} className="w-full h-full object-cover" />
+                                    </div>
+                                ))}
                             </div>
                         )}
 

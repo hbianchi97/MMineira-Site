@@ -149,28 +149,30 @@ model Category {
 }
 
 model Product {
-  id           String   @id @default(cuid())
-  name         String
-  slug         String   @unique
-  description  String?  @db.Text
-  price        Int      // em centavos (R$ 189,00 = 18900)
-  comparePrice Int?     // preço original antes do desconto
-  categoryId   String
-  images       Json     // array de URLs: ["url1", "url2"]
-  sizes        String[] // ["P", "M", "G", "GG"]
-  colors       Json?    // [{name: "Azul", hex: "#0000FF"}]
-  stock        Int      @default(0)
-  sku          String?  @unique
-  weight       Int?     // em gramas para cálculo de frete
-  isActive     Boolean  @default(true)
-  isFeatured   Boolean  @default(false)
-  isNew        Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String?  @db.Text
+  price           Int      // em centavos (R$ 189,00 = 18900)
+  comparePrice    Int?     // preço original antes do desconto
+  categoryId      String
+  images          Json     // array de URLs: ["url1", "url2"]
+  sizes           String[] // ["P", "M", "G", "GG"]
+  colors          Json?    // [{name: "Azul", hex: "#0000FF"}]
+  shippingOptions String[] @default(["envio", "retirada"]) // opcoes de frete
+  stock           Int      @default(0)
+  sku             String?  @unique
+  weight          Int?     // em gramas para cálculo de frete
+  isActive        Boolean  @default(true)
+  isFeatured      Boolean  @default(false)
+  isNew           Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   category   Category    @relation(fields: [categoryId], references: [id])
   orderItems OrderItem[]
   cartItems  CartItem[]
+  views      ProductView[]
 
   @@index([categoryId])
   @@index([isActive, isFeatured])
@@ -289,15 +291,16 @@ model Address {
 // ==========================================
 
 model SiteConfig {
-  id        String   @id @default(cuid())
-  pageKey   String   @unique // "home", "biquinis", "maios", "saidas-de-praia"
-  imageUrl  String?
-  title     String?
-  subtitle  String?
-  description String? @db.Text
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  pageKey     String   @unique // "home", "biquinis", "maios", "saidas-de-praia"
+  imageUrl    String?
+  images      Json?    // array de URLs para multiplas imagens
+  title       String?
+  subtitle    String?
+  description String?  @db.Text
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([pageKey])
 }
@@ -325,6 +328,8 @@ model ProductView {
   sessionId String?
   userId    String?
   viewedAt  DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
   @@index([viewedAt])

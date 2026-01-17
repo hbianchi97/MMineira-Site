@@ -28,10 +28,14 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
+        const images = body.images || (body.imageUrl ? [body.imageUrl] : []);
+        const imageUrl = images[0] || body.imageUrl || null;
+
         const config = await db.siteConfig.upsert({
             where: { pageKey: body.pageKey },
             update: {
-                imageUrl: body.imageUrl,
+                imageUrl,
+                images,
                 title: body.title,
                 subtitle: body.subtitle,
                 description: body.description,
@@ -39,7 +43,8 @@ export async function POST(request: NextRequest) {
             },
             create: {
                 pageKey: body.pageKey,
-                imageUrl: body.imageUrl,
+                imageUrl,
+                images,
                 title: body.title,
                 subtitle: body.subtitle,
                 description: body.description,

@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
                 images: body.images,
                 sizes: body.sizes,
                 colors: body.colors,
+                shippingOptions: body.shippingOptions || ["envio", "retirada"],
                 stock: body.stock,
                 weight: body.weight,
                 isNew: body.isNew || false,

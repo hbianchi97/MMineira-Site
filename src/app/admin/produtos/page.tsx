@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Plus, Pencil, Trash2, Search, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, X, Check } from "lucide-react";
 import MultiImageUploader from "@/components/admin/MultiImageUploader";
 
 interface Product {
@@ -15,6 +15,8 @@ interface Product {
     isNew: boolean;
     isFeatured: boolean;
     images: string[];
+    colors: { name: string; hex: string }[];
+    shippingOptions: string[];
     category: {
         name: string;
     };
@@ -25,6 +27,34 @@ interface Category {
     name: string;
     slug: string;
 }
+
+const AVAILABLE_COLORS = [
+    { name: "Preto", hex: "#000000" },
+    { name: "Branco", hex: "#FFFFFF" },
+    { name: "Vermelho", hex: "#E53935" },
+    { name: "Rosa", hex: "#E91E63" },
+    { name: "Pink", hex: "#FF4081" },
+    { name: "Roxo", hex: "#9C27B0" },
+    { name: "Azul", hex: "#1E88E5" },
+    { name: "Azul Marinho", hex: "#1A237E" },
+    { name: "Azul Claro", hex: "#4FC3F7" },
+    { name: "Verde", hex: "#43A047" },
+    { name: "Verde Agua", hex: "#4DB6AC" },
+    { name: "Amarelo", hex: "#FDD835" },
+    { name: "Laranja", hex: "#FB8C00" },
+    { name: "Coral", hex: "#FF7043" },
+    { name: "Bege", hex: "#D7CCC8" },
+    { name: "Marrom", hex: "#795548" },
+    { name: "Dourado", hex: "#FFD700" },
+    { name: "Prata", hex: "#C0C0C0" },
+    { name: "Estampado", hex: "linear-gradient(45deg, #E91E63, #4FC3F7, #FDD835)" },
+    { name: "Cor Unica", hex: "#9E9E9E" },
+];
+
+const SHIPPING_OPTIONS = [
+    { value: "envio", label: "Envio (Entrega)" },
+    { value: "retirada", label: "Retirar na Loja" },
+];
 
 export default function AdminProducts() {
     const [products, setProducts] = useState<Product[]>([]);
@@ -44,7 +74,8 @@ export default function AdminProducts() {
         categoryId: "",
         images: "",
         sizes: "P, M, G, GG",
-        colors: "",
+        colors: [] as { name: string; hex: string }[],
+        shippingOptions: ["envio", "retirada"] as string[],
         stock: "10",
         weight: "150",
         isNew: false,
@@ -97,6 +128,26 @@ export default function AdminProducts() {
         }).format(value / 100);
     };
 
+    const toggleColor = (color: { name: string; hex: string }) => {
+        setFormData((prev) => {
+            const exists = prev.colors.find((c) => c.name === color.name);
+            if (exists) {
+                return { ...prev, colors: prev.colors.filter((c) => c.name !== color.name) };
+            }
+            return { ...prev, colors: [...prev.colors, color] };
+        });
+    };
+
+    const toggleShipping = (option: string) => {
+        setFormData((prev) => {
+            const exists = prev.shippingOptions.includes(option);
+            if (exists) {
+                return { ...prev, shippingOptions: prev.shippingOptions.filter((o) => o !== option) };
+            }
+            return { ...prev, shippingOptions: [...prev.shippingOptions, option] };
+        });
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -109,11 +160,10 @@ export default function AdminProducts() {
                 ? Math.round(parseFloat(formData.comparePrice) * 100)
                 : null,
             categoryId: formData.categoryId,
-            images: formData.images.split(",").map((url) => url.trim()),
+            images: formData.images.split(",").map((url) => url.trim()).filter(Boolean),
             sizes: formData.sizes.split(",").map((s) => s.trim()),
-            colors: formData.colors
-                ? JSON.parse(formData.colors)
-                : [],
+            colors: formData.colors,
+            shippingOptions: formData.shippingOptions,
             stock: parseInt(formData.stock),
             weight: parseInt(formData.weight),
             isNew: formData.isNew,
@@ -174,7 +224,8 @@ export default function AdminProducts() {
             categoryId: "",
             images: product.images.join(", "),
             sizes: "P, M, G, GG",
-            colors: "",
+            colors: product.colors || [],
+            shippingOptions: product.shippingOptions || ["envio", "retirada"],
             stock: product.stock.toString(),
             weight: "150",
             isNew: product.isNew,
@@ -194,7 +245,8 @@ export default function AdminProducts() {
             categoryId: "",
             images: "",
             sizes: "P, M, G, GG",
-            colors: "",
+            colors: [],
+            shippingOptions: ["envio", "retirada"],
             stock: "10",
             weight: "150",
             isNew: false,
@@ -258,7 +310,7 @@ export default function AdminProducts() {
                                     Categoria
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                    Preço
+                                    Preco
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                     Estoque
@@ -267,7 +319,7 @@ export default function AdminProducts() {
                                     Status
                                 </th>
                                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                                    Ações
+                                    Acoes
                                 </th>
                             </tr>
                         </thead>
@@ -403,7 +455,7 @@ export default function AdminProducts() {
 
                             <div>
                                 <label className="block text-sm font-medium mb-1">
-                                    Descrição
+                                    Descricao
                                 </label>
                                 <textarea
                                     value={formData.description}
@@ -418,7 +470,7 @@ export default function AdminProducts() {
                             <div className="grid sm:grid-cols-3 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium mb-1">
-                                        Preço (R$)
+                                        Preco (R$)
                                     </label>
                                     <input
                                         type="number"
@@ -433,7 +485,7 @@ export default function AdminProducts() {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium mb-1">
-                                        Preço Anterior
+                                        Preco Anterior
                                     </label>
                                     <input
                                         type="number"
@@ -481,10 +533,74 @@ export default function AdminProducts() {
                                 label="Imagens do Produto"
                             />
 
+                            <div>
+                                <label className="block text-sm font-medium mb-2">
+                                    Cores Disponiveis
+                                </label>
+                                <div className="flex flex-wrap gap-2">
+                                    {AVAILABLE_COLORS.map((color) => {
+                                        const isSelected = formData.colors.some((c) => c.name === color.name);
+                                        const isGradient = color.hex.includes("gradient");
+                                        return (
+                                            <button
+                                                key={color.name}
+                                                type="button"
+                                                onClick={() => toggleColor(color)}
+                                                className={`relative flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition ${
+                                                    isSelected
+                                                        ? "border-amber-500 bg-amber-50"
+                                                        : "border-gray-200 hover:border-gray-300"
+                                                }`}
+                                                title={color.name}
+                                            >
+                                                <span
+                                                    className="w-5 h-5 rounded-full border border-gray-300"
+                                                    style={{
+                                                        background: isGradient ? color.hex : color.hex,
+                                                    }}
+                                                />
+                                                <span className="text-xs">{color.name}</span>
+                                                {isSelected && (
+                                                    <Check className="h-3 w-3 text-amber-600" />
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-2">
+                                    Opcoes de Frete
+                                </label>
+                                <div className="flex gap-4">
+                                    {SHIPPING_OPTIONS.map((option) => {
+                                        const isSelected = formData.shippingOptions.includes(option.value);
+                                        return (
+                                            <button
+                                                key={option.value}
+                                                type="button"
+                                                onClick={() => toggleShipping(option.value)}
+                                                className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition ${
+                                                    isSelected
+                                                        ? "border-amber-500 bg-amber-50"
+                                                        : "border-gray-200 hover:border-gray-300"
+                                                }`}
+                                            >
+                                                {isSelected && (
+                                                    <Check className="h-4 w-4 text-amber-600" />
+                                                )}
+                                                <span className="text-sm">{option.label}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
                             <div className="grid sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium mb-1">
-                                        Tamanhos (separados por vírgula)
+                                        Tamanhos (separados por virgula)
                                     </label>
                                     <input
                                         type="text"

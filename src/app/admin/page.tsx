@@ -96,11 +96,11 @@ export default function AdminDashboard() {
                         <span className="text-sm font-medium">Ver Produtos</span>
                     </a>
                     <a
-                        href="/admin/produtos?action=new"
+                        href="/admin/dashboard"
                         className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition text-center"
                     >
-                        <Package className="h-8 w-8 mx-auto mb-2 text-green-600" />
-                        <span className="text-sm font-medium">Novo Produto</span>
+                        <TrendingUp className="h-8 w-8 mx-auto mb-2 text-green-600" />
+                        <span className="text-sm font-medium">Dashboards</span>
                     </a>
                     <a
                         href="/admin/configuracoes"

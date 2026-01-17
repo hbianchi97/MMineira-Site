@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import {
     ChevronLeft,
@@ -52,6 +52,10 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
     const [quantity, setQuantity] = useState(1);
     const [addedToCart, setAddedToCart] = useState(false);
+
+    useEffect(() => {
+        fetch(`/api/products/${product.slug}/view`, { method: "POST" }).catch(() => {});
+    }, [product.slug]);
 
     const formatPrice = (value: number) => {
         return new Intl.NumberFormat("pt-BR", {

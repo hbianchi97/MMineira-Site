@@ -15,6 +15,7 @@ import {
     Check,
 } from "lucide-react";
 import { useCart } from "@/components/shop/CartContext";
+import { getImageUrl } from "@/lib/utils";
 
 interface ProductColor {
     name: string;
@@ -81,7 +82,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             quantity,
             size: selectedSize,
             color: selectedColor || undefined,
-            imageUrl: product.images[0] || "",
+            imageUrl: getImageUrl(product.images[0] || ""),
             slug: product.slug,
         });
 
@@ -104,7 +105,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                         <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-secondary">
                             {product.images[selectedImage] ? (
                                 <Image
-                                    src={product.images[selectedImage]}
+                                    src={getImageUrl(product.images[selectedImage])}
                                     alt={product.name}
                                     fill
                                     className="object-cover"
@@ -168,7 +169,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                                             }`}
                                     >
                                         <Image
-                                            src={image}
+                                            src={getImageUrl(image)}
                                             alt={`${product.name} - Foto ${index + 1}`}
                                             fill
                                             className="object-cover"

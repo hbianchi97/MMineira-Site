@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
+import { getImageUrl } from "@/lib/utils";
 
 interface ProductCardProps {
     id: string;
@@ -45,7 +46,7 @@ export function ProductCard({
                     {/* Primary Image */}
                     {images[0] ? (
                         <Image
-                            src={images[0]}
+                            src={getImageUrl(images[0])}
                             alt={name}
                             fill
                             className="object-cover transition-opacity duration-500 group-hover:opacity-0"
@@ -60,7 +61,7 @@ export function ProductCard({
                     {/* Hover Image */}
                     {images[1] && (
                         <Image
-                            src={images[1]}
+                            src={getImageUrl(images[1])}
                             alt={`${name} - foto alternativa`}
                             fill
                             className="object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"

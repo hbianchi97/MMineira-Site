@@ -1,43 +1,70 @@
-# AddPlus
+# Menina Mineira - E-commerce de Moda Praia
 
 ## Overview
-A Next.js 15 application with Clerk authentication, Prisma ORM, and PostgreSQL database.
+E-commerce de roupas de praia com foco em biquínis, maiôs e saídas de praia. Marca baseada no Rio de Janeiro com foco em estampas exclusivas.
 
 ## Tech Stack
-- **Framework**: Next.js 15.5.9 with React 19
+- **Framework**: Next.js 15.5.9 com React 19
 - **Language**: TypeScript
-- **Database**: PostgreSQL with Prisma ORM
+- **Database**: PostgreSQL com Prisma ORM
 - **Authentication**: Clerk
-- **Styling**: Tailwind CSS 4, Radix UI components
-- **AI Integration**: AI SDK with OpenRouter
-- **Testing**: Vitest (unit), Playwright (e2e)
+- **Styling**: Tailwind CSS 4, Radix UI
+- **State Management**: TanStack Query, React Hook Form
+- **AI Integration**: AI SDK com OpenRouter (para chat de atendimento)
 
 ## Project Structure
 ```
 src/
-├── app/           # Next.js App Router pages and layouts
-│   ├── api/       # API routes
-│   ├── layout.tsx # Root layout with providers
-│   └── page.tsx   # Home page
-├── lib/           # Utility libraries
+├── app/                    # Next.js App Router
+│   ├── api/               # API routes
+│   ├── categoria/[slug]/  # Página de categoria
+│   ├── produto/[slug]/    # Página de produto
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Home page
+├── components/
+│   ├── layout/            # Header, Footer
+│   ├── shop/              # ProductCard, CartContext, SideCart
+│   ├── ui/                # Base UI components
+│   └── providers/         # Context providers
+├── lib/
+│   ├── brand-config.ts    # Configuração da marca
+│   ├── shop-data.ts       # Funções de dados de produtos
+│   ├── db.ts              # Prisma client
+│   └── utils.ts           # Utilities
 prisma/
-├── schema.prisma  # Database schema
+├── schema.prisma          # Database schema (Category, Product, Order, Cart, etc.)
 ```
 
-## Environment Variables
-Required:
-- `DATABASE_URL` - PostgreSQL connection string (auto-configured by Replit)
-- Clerk keys are in keyless development mode
+## E-commerce Models
+- **Category**: Categorias de produtos (Biquínis, Maiôs, Saídas de Praia)
+- **Product**: Produtos com preço, imagens, tamanhos, cores, estoque
+- **Cart/CartItem**: Carrinho de compras
+- **Order/OrderItem**: Pedidos
+- **Address**: Endereços de entrega
 
-## Development
-- Run: `npm run dev -- -p 5000 -H 0.0.0.0`
-- Database migrations: `npm run db:push`
+## Key Features
+- Catálogo de produtos com categorias
+- Carrinho de compras (SideCart)
+- Página de produto com galeria de imagens
+- Filtros por tamanho e cor
+- Sistema de créditos para recursos AI
 
 ## Scripts
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
-- `npm run start` - Start production server
 - `npm run db:push` - Push Prisma schema to database
 - `npm run db:migrate` - Run database migrations
-- `npm run test:unit` - Run unit tests
-- `npm run test:e2e` - Run end-to-end tests
+
+## Environment Variables
+- `DATABASE_URL` - PostgreSQL connection (auto-configured by Replit)
+- `NEXT_PUBLIC_APP_URL` - Public URL
+- Clerk keys - Authentication (keyless mode available)
+
+## User Preferences
+- Portuguese (Brazilian) language
+- Prices in BRL (centavos)
+- Sizes: P, M, G, GG
+
+## Recent Changes
+- Initial setup on Replit environment
+- Database synchronized with e-commerce schema

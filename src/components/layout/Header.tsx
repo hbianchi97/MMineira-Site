@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X, ShoppingBag, Search, User } from "lucide-react";
+import { Menu, X, ShoppingBag, Search, LogIn, UserPlus } from "lucide-react";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { site } from "@/lib/brand-config";
 import { useCart } from "@/components/shop/CartContext";
 
@@ -45,7 +46,7 @@ export function Header() {
                     </div>
 
                     {/* Desktop Actions */}
-                    <div className="hidden md:flex md:items-center md:gap-4">
+                    <div className="hidden md:flex md:items-center md:gap-3">
                         <button
                             type="button"
                             className="rounded-full p-2 text-foreground/70 transition-colors hover:bg-secondary hover:text-foreground"
@@ -53,13 +54,35 @@ export function Header() {
                         >
                             <Search className="h-5 w-5" />
                         </button>
-                        <Link
-                            href="/conta"
-                            className="rounded-full p-2 text-foreground/70 transition-colors hover:bg-secondary hover:text-foreground"
-                            aria-label="Minha conta"
-                        >
-                            <User className="h-5 w-5" />
-                        </Link>
+                        
+                        <SignedOut>
+                            <Link
+                                href="/sign-in"
+                                className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-secondary hover:text-foreground"
+                            >
+                                <LogIn className="h-4 w-4" />
+                                Entrar
+                            </Link>
+                            <Link
+                                href="/sign-up"
+                                className="flex items-center gap-1.5 rounded-full gradient-gold px-4 py-2 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-105"
+                            >
+                                <UserPlus className="h-4 w-4" />
+                                Registrar
+                            </Link>
+                        </SignedOut>
+                        
+                        <SignedIn>
+                            <UserButton 
+                                afterSignOutUrl="/"
+                                appearance={{
+                                    elements: {
+                                        avatarBox: "h-9 w-9"
+                                    }
+                                }}
+                            />
+                        </SignedIn>
+                        
                         <button
                             type="button"
                             onClick={openCart}
@@ -119,15 +142,40 @@ export function Header() {
                                     {item.name}
                                 </Link>
                             ))}
-                            <div className="mt-4 flex gap-4 border-t border-border px-3 pt-4">
-                                <Link
-                                    href="/conta"
-                                    className="flex items-center gap-2 text-sm font-medium text-foreground/70"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
-                                    <User className="h-5 w-5" />
-                                    Minha Conta
-                                </Link>
+                            <div className="mt-4 border-t border-border px-3 pt-4">
+                                <SignedOut>
+                                    <div className="flex flex-col gap-2">
+                                        <Link
+                                            href="/sign-in"
+                                            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-secondary"
+                                            onClick={() => setIsMenuOpen(false)}
+                                        >
+                                            <LogIn className="h-5 w-5" />
+                                            Entrar
+                                        </Link>
+                                        <Link
+                                            href="/sign-up"
+                                            className="flex items-center justify-center gap-2 rounded-lg gradient-gold px-3 py-2 text-sm font-semibold text-white"
+                                            onClick={() => setIsMenuOpen(false)}
+                                        >
+                                            <UserPlus className="h-5 w-5" />
+                                            Criar Conta
+                                        </Link>
+                                    </div>
+                                </SignedOut>
+                                <SignedIn>
+                                    <div className="flex items-center gap-3">
+                                        <UserButton 
+                                            afterSignOutUrl="/"
+                                            appearance={{
+                                                elements: {
+                                                    avatarBox: "h-9 w-9"
+                                                }
+                                            }}
+                                        />
+                                        <span className="text-sm font-medium text-foreground/80">Minha Conta</span>
+                                    </div>
+                                </SignedIn>
                             </div>
                         </div>
                     </div>

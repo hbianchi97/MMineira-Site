@@ -1,12 +1,17 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, Link, X, Loader2, Plus } from "lucide-react";
+import { Upload, Link, X, Loader2, Plus, CheckCircle } from "lucide-react";
 
 interface MultiImageUploaderProps {
     value: string;
     onChange: (urls: string) => void;
     label?: string;
+}
+
+interface UploadProgress {
+    name: string;
+    status: "uploading" | "done" | "error";
 }
 
 export default function MultiImageUploader({
@@ -16,6 +21,7 @@ export default function MultiImageUploader({
 }: MultiImageUploaderProps) {
     const [mode, setMode] = useState<"url" | "upload">("url");
     const [uploading, setUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState<UploadProgress[]>([]);
     const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -24,18 +30,7 @@ export default function MultiImageUploader({
         .map((url) => url.trim())
         .filter(Boolean);
 
-    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        if (!file.type.startsWith("image/")) {
-            setError("Por favor, selecione uma imagem");
-            return;
-        }
-
-        setUploading(true);
-        setError(null);
-
+    const uploadSingleFile = async (file: File): Promise<string | null> => {
         try {
             const res = await fetch("/api/uploads/request-url", {
                 method: "POST",
@@ -63,16 +58,64 @@ export default function MultiImageUploader({
                 throw new Error("Erro ao fazer upload");
             }
 
-            const newImages = [...images, objectPath];
-            onChange(newImages.join(", "));
+            return objectPath;
         } catch (err) {
             console.error("Upload error:", err);
-            setError("Erro ao fazer upload da imagem");
-        } finally {
-            setUploading(false);
-            if (fileInputRef.current) {
-                fileInputRef.current.value = "";
+            return null;
+        }
+    };
+
+    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
+        const imageFiles = Array.from(files).filter((file) =>
+            file.type.startsWith("image/")
+        );
+
+        if (imageFiles.length === 0) {
+            setError("Por favor, selecione apenas imagens");
+            return;
+        }
+
+        if (imageFiles.length !== files.length) {
+            setError("Alguns arquivos nao eram imagens e foram ignorados");
+        } else {
+            setError(null);
+        }
+
+        setUploading(true);
+        setUploadProgress(
+            imageFiles.map((f) => ({ name: f.name, status: "uploading" }))
+        );
+
+        const newPaths: string[] = [];
+
+        for (let i = 0; i < imageFiles.length; i++) {
+            const file = imageFiles[i];
+            const path = await uploadSingleFile(file);
+
+            setUploadProgress((prev) =>
+                prev.map((p, idx) =>
+                    idx === i ? { ...p, status: path ? "done" : "error" } : p
+                )
+            );
+
+            if (path) {
+                newPaths.push(path);
             }
+        }
+
+        if (newPaths.length > 0) {
+            const allImages = [...images, ...newPaths];
+            onChange(allImages.join(", "));
+        }
+
+        setUploading(false);
+        setTimeout(() => setUploadProgress([]), 2000);
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
         }
     };
 
@@ -158,10 +201,41 @@ export default function MultiImageUploader({
                         </div>
                     )}
 
+                    {uploadProgress.length > 0 && (
+                        <div className="space-y-1 p-3 bg-gray-50 rounded-lg">
+                            {uploadProgress.map((item, idx) => (
+                                <div
+                                    key={idx}
+                                    className="flex items-center gap-2 text-sm"
+                                >
+                                    {item.status === "uploading" && (
+                                        <Loader2 className="h-4 w-4 animate-spin text-amber-600" />
+                                    )}
+                                    {item.status === "done" && (
+                                        <CheckCircle className="h-4 w-4 text-green-600" />
+                                    )}
+                                    {item.status === "error" && (
+                                        <X className="h-4 w-4 text-red-600" />
+                                    )}
+                                    <span
+                                        className={`truncate ${
+                                            item.status === "error"
+                                                ? "text-red-600"
+                                                : "text-gray-600"
+                                        }`}
+                                    >
+                                        {item.name}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
                     <input
                         ref={fileInputRef}
                         type="file"
                         accept="image/*"
+                        multiple
                         onChange={handleFileSelect}
                         disabled={uploading}
                         className="hidden"
@@ -186,7 +260,7 @@ export default function MultiImageUploader({
                             <>
                                 <Plus className="h-5 w-5 text-amber-600" />
                                 <span className="text-sm text-gray-600">
-                                    Adicionar imagem
+                                    Adicionar imagens (pode selecionar varias)
                                 </span>
                             </>
                         )}

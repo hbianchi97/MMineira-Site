@@ -342,35 +342,42 @@ export default function AdminNovidades() {
                                 />
                             </div>
 
-                            <div className="flex items-center gap-6">
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={formData.isPublished}
-                                        onChange={(e) =>
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                isPublished: e.target.checked,
-                                            }))
-                                        }
-                                        className="w-4 h-4 text-amber-600 rounded focus:ring-amber-500"
-                                    />
-                                    <span className="text-sm">Publicar</span>
-                                </label>
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={formData.isFeatured}
-                                        onChange={(e) =>
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                isFeatured: e.target.checked,
-                                            }))
-                                        }
-                                        className="w-4 h-4 text-amber-600 rounded focus:ring-amber-500"
-                                    />
-                                    <span className="text-sm">Destaque</span>
-                                </label>
+                            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                                <div className="flex items-center gap-6">
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.isPublished}
+                                            onChange={(e) =>
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    isPublished: e.target.checked,
+                                                }))
+                                            }
+                                            className="w-5 h-5 text-amber-600 rounded focus:ring-amber-500"
+                                        />
+                                        <span className="text-sm font-medium text-amber-800">Publicar na pagina de Novidades</span>
+                                    </label>
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.isFeatured}
+                                            onChange={(e) =>
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    isFeatured: e.target.checked,
+                                                }))
+                                            }
+                                            className="w-5 h-5 text-amber-600 rounded focus:ring-amber-500"
+                                        />
+                                        <span className="text-sm font-medium text-amber-800">Destaque</span>
+                                    </label>
+                                </div>
+                                {!formData.isPublished && (
+                                    <p className="mt-2 text-xs text-amber-700">
+                                        Marque "Publicar" para que este post apareca na pagina de Novidades.
+                                    </p>
+                                )}
                             </div>
                         </div>
 

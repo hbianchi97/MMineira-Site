@@ -12,6 +12,9 @@ import {
     Store,
     Newspaper,
     BarChart3,
+    Tag,
+    Star,
+    ShoppingCart,
 } from "lucide-react";
 
 const adminEmails = ["admin@meninamineira.com.br"];
@@ -47,6 +50,9 @@ export default function AdminLayout({
         { href: "/admin", label: "Visao Geral", icon: LayoutDashboard },
         { href: "/admin/dashboard", label: "Analytics", icon: BarChart3 },
         { href: "/admin/produtos", label: "Produtos", icon: Package },
+        { href: "/admin/cupons", label: "Cupons", icon: Tag },
+        { href: "/admin/avaliacoes", label: "Avaliações", icon: Star },
+        { href: "/admin/carrinhos-abandonados", label: "Carrinhos", icon: ShoppingCart },
         { href: "/admin/novidades", label: "Novidades", icon: Newspaper },
         { href: "/admin/configuracoes", label: "Configuracoes", icon: Settings },
     ];

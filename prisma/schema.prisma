@@ -24,6 +24,7 @@ model User {
   orders             Order[]
   cart               Cart?
   addresses          Address[]
+  reviews            Review[]
 }
 
 model Feature {
@@ -68,10 +69,11 @@ enum OperationType {
 }
 
 model AdminSettings {
-  id           String   @id @default("singleton")
-  featureCosts Json?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                String   @id @default("singleton")
+  featureCosts      Json?
+  lowStockThreshold Int      @default(3)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 model Plan {
@@ -173,6 +175,7 @@ model Product {
   orderItems OrderItem[]
   cartItems  CartItem[]
   views      ProductView[]
+  reviews    Review[]
 
   @@index([categoryId])
   @@index([isActive, isFeatured])
@@ -195,6 +198,8 @@ model Order {
   paymentId       String?     // ID do gateway de pagamento
   trackingCode    String?
   notes           String?     @db.Text
+  couponId        String?
+  coupon          Coupon?     @relation(fields: [couponId], references: [id], onDelete: SetNull)
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
@@ -232,6 +237,29 @@ enum OrderStatus {
   DELIVERED        // Entregue
   CANCELLED        // Cancelado
   REFUNDED         // Reembolsado
+}
+
+enum CouponType {
+  PERCENTAGE // Desconto percentual (ex: 10%)
+  FIXED      // Desconto de valor fixo (ex: R$ 20,00)
+}
+
+model Coupon {
+  id              String     @id @default(cuid())
+  code            String     @unique
+  discountType    CouponType
+  discountValue   Int        // Para PERCENTAGE: 1-100; Para FIXED: valor em centavos
+  expiresAt       DateTime?
+  isActive        Boolean    @default(true)
+  maxUses         Int?       // Número máximo de usos totais do cupom
+  uses            Int        @default(0) // Quantas vezes já foi usado
+  minPurchaseValue Int?       // Valor mínimo da compra em centavos para o cupom ser válido
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  orders Order[]
+
+  @@index([code, isActive, expiresAt])
 }
 
 model Cart {
@@ -334,5 +362,23 @@ model ProductView {
   @@index([productId])
   @@index([viewedAt])
   @@index([productId, viewedAt])
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  rating     Int
+  comment    String?  @db.Text
+  imageUrl   String?
+  isApproved Boolean  @default(true)
+  productId  String
+  userId     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([userId])
 }
 

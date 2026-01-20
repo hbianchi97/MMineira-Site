@@ -14,6 +14,7 @@ import {
     Trash2,
     X,
 } from "lucide-react";
+import { SalesChart } from "./SalesChart";
 
 interface ProductAnalytics {
     productId: string;
@@ -199,11 +200,14 @@ export default function AnalyticsDashboard() {
     };
 
     return (
-        <div>
+        <div className="space-y-6">
+            <SalesChart />
+
+            <div>
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-bold flex items-center gap-2">
                     <BarChart3 className="h-7 w-7 text-amber-600" />
-                    Dashboard de Analytics
+                    Análise de Produtos
                 </h1>
                 <div className="flex gap-2">
                     <button

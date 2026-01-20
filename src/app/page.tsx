@@ -12,6 +12,8 @@ import {
     getAllSiteConfigs,
 } from "@/lib/shop-data";
 
+export const revalidate = 3600;
+
 const benefits = [
     {
         icon: Truck,

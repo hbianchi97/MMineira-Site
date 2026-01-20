@@ -13,6 +13,8 @@ import {
 } from "@/lib/shop-data";
 import { ProductFilters } from "./ProductFilters";
 
+export const revalidate = 3600;
+
 interface CategoryPageProps {
     params: Promise<{ slug: string }>;
 }

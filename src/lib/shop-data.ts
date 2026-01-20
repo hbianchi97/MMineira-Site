@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { Category, Product } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 
 export type ProductWithCategory = Product & {
     category: Category;
@@ -11,54 +12,70 @@ export type ProductColor = {
 };
 
 // Categories
-export async function getCategories() {
-    return db.category.findMany({
-        where: { isActive: true },
-        orderBy: { sortOrder: "asc" },
-    });
-}
+export const getCategories = unstable_cache(
+    async () => {
+        return db.category.findMany({
+            where: { isActive: true },
+            orderBy: { sortOrder: "asc" },
+        });
+    },
+    ["categories"],
+    { revalidate: 3600, tags: ["categories"] }
+);
 
-export async function getCategoryBySlug(slug: string) {
-    return db.category.findUnique({
-        where: { slug },
-    });
-}
+export const getCategoryBySlug = unstable_cache(
+    async (slug: string) => {
+        return db.category.findUnique({
+            where: { slug },
+        });
+    },
+    ["category-by-slug"],
+    { revalidate: 3600, tags: ["categories"] }
+);
 
 // Products
-export async function getProducts(options?: {
-    categorySlug?: string;
-    featured?: boolean;
-    isNew?: boolean;
-    limit?: number;
-}) {
-    const where: Record<string, unknown> = { isActive: true };
+export const getProducts = unstable_cache(
+    async (options?: {
+        categorySlug?: string;
+        featured?: boolean;
+        isNew?: boolean;
+        limit?: number;
+    }) => {
+        const where: Record<string, unknown> = { isActive: true };
 
-    if (options?.featured) {
-        where.isFeatured = true;
-    }
+        if (options?.featured) {
+            where.isFeatured = true;
+        }
 
-    if (options?.isNew) {
-        where.isNew = true;
-    }
+        if (options?.isNew) {
+            where.isNew = true;
+        }
 
-    if (options?.categorySlug) {
-        where.category = { slug: options.categorySlug };
-    }
+        if (options?.categorySlug) {
+            where.category = { slug: options.categorySlug };
+        }
 
-    return db.product.findMany({
-        where,
-        include: { category: true },
-        orderBy: { createdAt: "desc" },
-        take: options?.limit,
-    });
-}
+        return db.product.findMany({
+            where,
+            include: { category: true },
+            orderBy: { createdAt: "desc" },
+            take: options?.limit,
+        });
+    },
+    ["products"],
+    { revalidate: 3600, tags: ["products"] }
+);
 
-export async function getProductBySlug(slug: string) {
-    return db.product.findUnique({
-        where: { slug },
-        include: { category: true },
-    });
-}
+export const getProductBySlug = unstable_cache(
+    async (slug: string) => {
+        return db.product.findUnique({
+            where: { slug },
+            include: { category: true },
+        });
+    },
+    ["product-by-slug"],
+    { revalidate: 3600, tags: ["products"] }
+);
 
 export async function getFeaturedProducts(limit = 4) {
     return getProducts({ featured: true, limit });
@@ -72,21 +89,21 @@ export async function getProductsByCategory(categorySlug: string) {
     return getProducts({ categorySlug });
 }
 
-export async function getRelatedProducts(
-    productId: string,
-    categoryId: string,
-    limit = 4
-) {
-    return db.product.findMany({
-        where: {
-            isActive: true,
-            categoryId,
-            id: { not: productId },
-        },
-        include: { category: true },
-        take: limit,
-    });
-}
+export const getRelatedProducts = unstable_cache(
+    async (productId: string, categoryId: string, limit = 4) => {
+        return db.product.findMany({
+            where: {
+                isActive: true,
+                categoryId,
+                id: { not: productId },
+            },
+            include: { category: true },
+            take: limit,
+        });
+    },
+    ["related-products"],
+    { revalidate: 3600, tags: ["products"] }
+);
 
 // Helper to parse JSON fields
 export function parseProductImages(images: unknown): string[] {
@@ -118,35 +135,55 @@ export function parseProductColors(colors: unknown): ProductColor[] {
 }
 
 // Site Configuration
-export async function getSiteConfig(pageKey: string) {
-    return db.siteConfig.findUnique({
-        where: { pageKey },
-    });
-}
+export const getSiteConfig = unstable_cache(
+    async (pageKey: string) => {
+        return db.siteConfig.findUnique({
+            where: { pageKey },
+        });
+    },
+    ["site-config"],
+    { revalidate: 3600, tags: ["config"] }
+);
 
-export async function getAllSiteConfigs() {
-    return db.siteConfig.findMany();
-}
+export const getAllSiteConfigs = unstable_cache(
+    async () => {
+        return db.siteConfig.findMany();
+    },
+    ["all-site-configs"],
+    { revalidate: 3600, tags: ["config"] }
+);
 
 // Posts / Novidades
-export async function getPublishedPosts(limit?: number) {
-    return db.post.findMany({
-        where: { isPublished: true },
-        orderBy: { publishedAt: "desc" },
-        take: limit,
-    });
-}
+export const getPublishedPosts = unstable_cache(
+    async (limit?: number) => {
+        return db.post.findMany({
+            where: { isPublished: true },
+            orderBy: { publishedAt: "desc" },
+            take: limit,
+        });
+    },
+    ["published-posts"],
+    { revalidate: 3600, tags: ["posts"] }
+);
 
-export async function getFeaturedPosts(limit = 3) {
-    return db.post.findMany({
-        where: { isPublished: true, isFeatured: true },
-        orderBy: { publishedAt: "desc" },
-        take: limit,
-    });
-}
+export const getFeaturedPosts = unstable_cache(
+    async (limit = 3) => {
+        return db.post.findMany({
+            where: { isPublished: true, isFeatured: true },
+            orderBy: { publishedAt: "desc" },
+            take: limit,
+        });
+    },
+    ["featured-posts"],
+    { revalidate: 3600, tags: ["posts"] }
+);
 
-export async function getPostBySlug(slug: string) {
-    return db.post.findUnique({
-        where: { slug },
-    });
-}
+export const getPostBySlug = unstable_cache(
+    async (slug: string) => {
+        return db.post.findUnique({
+            where: { slug },
+        });
+    },
+    ["post-by-slug"],
+    { revalidate: 3600, tags: ["posts"] }
+);

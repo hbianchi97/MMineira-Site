@@ -11,6 +11,8 @@ import {
 } from "@/lib/shop-data";
 import { ProductDetails } from "./ProductDetails";
 
+export const revalidate = 3600;
+
 interface ProductPageProps {
     params: Promise<{ slug: string }>;
 }

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useCart } from "@/components/shop/CartContext";
 import { getImageUrl } from "@/lib/utils";
+import { Reviews } from "./Reviews";
 
 interface ProductColor {
     name: string;
@@ -55,8 +56,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     const [addedToCart, setAddedToCart] = useState(false);
 
     useEffect(() => {
-        fetch(`/api/products/${product.slug}/view`, { method: "POST" }).catch(() => {});
-    }, [product.slug]);
+        fetch(`/api/products/${product.id}/view`, { method: "POST" }).catch(() => {});
+    }, [product.id]);
 
     const formatPrice = (value: number) => {
         return new Intl.NumberFormat("pt-BR", {
@@ -350,6 +351,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                         )}
                     </div>
                 </div>
+                <Reviews productId={product.id} />
             </div>
         </section>
     );

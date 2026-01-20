@@ -98,10 +98,24 @@ export default function AdminSettings() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState<string | null>(null);
     const [savedPages, setSavedPages] = useState<string[]>([]);
+    const [lowStockThreshold, setLowStockThreshold] = useState("");
 
     useEffect(() => {
         fetchConfigs();
+        fetchAdminSettings();
     }, []);
+
+    const fetchAdminSettings = async () => {
+        try {
+            const res = await fetch("/api/admin/settings");
+            if (res.ok) {
+                const data = await res.json();
+                setLowStockThreshold(data.lowStockThreshold?.toString() || "3");
+            }
+        } catch (error) {
+            console.error("Error fetching admin settings:", error);
+        }
+    };
 
     const fetchConfigs = async () => {
         try {
@@ -169,6 +183,23 @@ export default function AdminSettings() {
         }
     };
 
+    const handleSaveThreshold = async () => {
+        setSaving("threshold");
+        try {
+            await fetch("/api/admin/settings", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    lowStockThreshold: parseInt(lowStockThreshold),
+                }),
+            });
+        } catch (error) {
+            console.error("Error saving threshold:", error);
+        } finally {
+            setSaving(null);
+        }
+    };
+
     const activeConfig = configs.find((c) => c.pageKey === activeTab);
 
     if (loading) {
@@ -181,151 +212,180 @@ export default function AdminSettings() {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-6">Configuracoes do Site</h1>
+            <h1 className="text-2xl font-bold mb-6">Configurações</h1>
 
-            <div className="flex gap-2 mb-6 flex-wrap">
-                {configs.map((config) => (
-                    <button
-                        key={config.pageKey}
-                        onClick={() => setActiveTab(config.pageKey)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
-                            activeTab === config.pageKey
-                                ? "bg-amber-600 text-white"
-                                : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
-                        }`}
-                    >
-                        {config.pageKey === "home" ? (
-                            <Home className="h-4 w-4" />
-                        ) : (
-                            <Waves className="h-4 w-4" />
-                        )}
-                        {config.label}
-                    </button>
-                ))}
-            </div>
-
-            {activeConfig && (
+            <div className="space-y-8">
                 <div className="bg-white rounded-xl border border-gray-200 p-6">
-                    <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                        <ImageIcon className="h-5 w-5 text-amber-600" />
-                        {activeConfig.label}
-                    </h2>
-
-                    <div className="space-y-4">
-                        <MultiImageUploader
-                            value={activeConfig.images.join(", ")}
-                            onChange={(imagesStr) => {
-                                const images = imagesStr.split(",").map((s) => s.trim()).filter(Boolean);
-                                updateConfig(activeConfig.pageKey, "images", images);
-                            }}
-                            label="Imagens da Pagina"
+                    <h2 className="text-lg font-semibold mb-4">Notificações</h2>
+                    <div>
+                        <label className="block text-sm font-medium mb-1">
+                            Avisar quando o estoque for menor ou igual a
+                        </label>
+                        <input
+                            type="number"
+                            value={lowStockThreshold}
+                            onChange={(e) => setLowStockThreshold(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg"
                         />
-
-                        {activeConfig.images.length > 0 && activeConfig.images[0] && (
-                            <div className="relative aspect-[21/9] rounded-lg overflow-hidden bg-gray-100">
-                                <img
-                                    src={activeConfig.images[0]}
-                                    alt={`Preview ${activeConfig.label}`}
-                                    className="w-full h-full object-cover"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-center">
-                                    <div className="p-8 text-white max-w-xl">
-                                        {activeConfig.subtitle && (
-                                            <p className="text-sm text-amber-400 mb-2">
-                                                {activeConfig.subtitle}
-                                            </p>
-                                        )}
-                                        <h3 className="text-2xl font-bold mb-2">
-                                            {activeConfig.title}
-                                        </h3>
-                                        <p className="text-white/80">{activeConfig.description}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {activeConfig.images.length > 1 && (
-                            <div className="grid grid-cols-4 gap-2">
-                                {activeConfig.images.slice(1).map((img, idx) => (
-                                    <div key={idx} className="aspect-square rounded-lg overflow-hidden bg-gray-100">
-                                        <img src={img} alt={`Imagem ${idx + 2}`} className="w-full h-full object-cover" />
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {activeConfig.pageKey === "home" && (
-                            <div>
-                                <label className="block text-sm font-medium mb-1">
-                                    Subtitulo (tag pequena)
-                                </label>
-                                <input
-                                    type="text"
-                                    value={activeConfig.subtitle}
-                                    onChange={(e) =>
-                                        updateConfig(activeConfig.pageKey, "subtitle", e.target.value)
-                                    }
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500"
-                                    placeholder="Ex: Nova Colecao 2026"
-                                />
-                            </div>
-                        )}
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">
-                                Titulo Principal
-                            </label>
-                            <input
-                                type="text"
-                                value={activeConfig.title}
-                                onChange={(e) =>
-                                    updateConfig(activeConfig.pageKey, "title", e.target.value)
-                                }
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">
-                                Descricao
-                            </label>
-                            <textarea
-                                value={activeConfig.description}
-                                onChange={(e) =>
-                                    updateConfig(activeConfig.pageKey, "description", e.target.value)
-                                }
-                                rows={3}
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 resize-none"
-                            />
-                        </div>
                     </div>
-
-                    <div className="flex justify-end mt-6">
+                    <div className="flex justify-end mt-4">
                         <button
-                            onClick={() => handleSave(activeConfig.pageKey)}
-                            disabled={saving === activeConfig.pageKey}
-                            className="flex items-center gap-2 bg-amber-600 text-white px-6 py-2 rounded-lg hover:bg-amber-700 transition disabled:opacity-50"
+                            onClick={handleSaveThreshold}
+                            disabled={saving === "threshold"}
+                            className="flex items-center gap-2 bg-amber-600 text-white px-6 py-2 rounded-lg"
                         >
-                            {saving === activeConfig.pageKey ? (
-                                <>
-                                    <Loader2 className="h-5 w-5 animate-spin" />
-                                    Salvando...
-                                </>
-                            ) : savedPages.includes(activeConfig.pageKey) ? (
-                                <>
-                                    <Check className="h-5 w-5" />
-                                    Salvo!
-                                </>
-                            ) : (
-                                <>
-                                    <Save className="h-5 w-5" />
-                                    Salvar {activeConfig.label}
-                                </>
-                            )}
+                            Salvar
                         </button>
                     </div>
                 </div>
-            )}
+
+                <div>
+                    <h2 className="text-lg font-semibold mb-4">Conteúdo do Site</h2>
+                    <div className="flex gap-2 mb-6 flex-wrap">
+                        {configs.map((config) => (
+                            <button
+                                key={config.pageKey}
+                                onClick={() => setActiveTab(config.pageKey)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
+                                    activeTab === config.pageKey
+                                        ? "bg-amber-600 text-white"
+                                        : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
+                                }`}
+                            >
+                                {config.pageKey === "home" ? (
+                                    <Home className="h-4 w-4" />
+                                ) : (
+                                    <Waves className="h-4 w-4" />
+                                )}
+                                {config.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {activeConfig && (
+                        <div className="bg-white rounded-xl border border-gray-200 p-6">
+                            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                                <ImageIcon className="h-5 w-5 text-amber-600" />
+                                {activeConfig.label}
+                            </h2>
+
+                            <div className="space-y-4">
+                                <MultiImageUploader
+                                    value={activeConfig.images.join(", ")}
+                                    onChange={(imagesStr) => {
+                                        const images = imagesStr.split(",").map((s) => s.trim()).filter(Boolean);
+                                        updateConfig(activeConfig.pageKey, "images", images);
+                                    }}
+                                    label="Imagens da Pagina"
+                                />
+
+                                {activeConfig.images.length > 0 && activeConfig.images[0] && (
+                                    <div className="relative aspect-[21/9] rounded-lg overflow-hidden bg-gray-100">
+                                        <img
+                                            src={activeConfig.images[0]}
+                                            alt={`Preview ${activeConfig.label}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-center">
+                                            <div className="p-8 text-white max-w-xl">
+                                                {activeConfig.subtitle && (
+                                                    <p className="text-sm text-amber-400 mb-2">
+                                                        {activeConfig.subtitle}
+                                                    </p>
+                                                )}
+                                                <h3 className="text-2xl font-bold mb-2">
+                                                    {activeConfig.title}
+                                                </h3>
+                                                <p className="text-white/80">{activeConfig.description}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeConfig.images.length > 1 && (
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {activeConfig.images.slice(1).map((img, idx) => (
+                                            <div key={idx} className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                                                <img src={img} alt={`Imagem ${idx + 2}`} className="w-full h-full object-cover" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {activeConfig.pageKey === "home" && (
+                                    <div>
+                                        <label className="block text-sm font-medium mb-1">
+                                            Subtitulo (tag pequena)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={activeConfig.subtitle}
+                                            onChange={(e) =>
+                                                updateConfig(activeConfig.pageKey, "subtitle", e.target.value)
+                                            }
+                                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500"
+                                            placeholder="Ex: Nova Colecao 2026"
+                                        />
+                                    </div>
+                                )}
+
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">
+                                        Titulo Principal
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={activeConfig.title}
+                                        onChange={(e) =>
+                                            updateConfig(activeConfig.pageKey, "title", e.target.value)
+                                        }
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">
+                                        Descricao
+                                    </label>
+                                    <textarea
+                                        value={activeConfig.description}
+                                        onChange={(e) =>
+                                            updateConfig(activeConfig.pageKey, "description", e.target.value)
+                                        }
+                                        rows={3}
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 resize-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end mt-6">
+                                <button
+                                    onClick={() => handleSave(activeConfig.pageKey)}
+                                    disabled={saving === activeConfig.pageKey}
+                                    className="flex items-center gap-2 bg-amber-600 text-white px-6 py-2 rounded-lg hover:bg-amber-700 transition disabled:opacity-50"
+                                >
+                                    {saving === activeConfig.pageKey ? (
+                                        <>
+                                            <Loader2 className="h-5 w-5 animate-spin" />
+                                            Salvando...
+                                        </>
+                                    ) : savedPages.includes(activeConfig.pageKey) ? (
+                                        <>
+                                            <Check className="h-5 w-5" />
+                                            Salvo!
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Save className="h-5 w-5" />
+                                            Salvar {activeConfig.label}
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }

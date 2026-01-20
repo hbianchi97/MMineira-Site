@@ -93,7 +93,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     <section className="border-t border-border bg-secondary/30 py-12 sm:py-16">
                         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                             <h2 className="mb-8 text-2xl font-bold">
-                                Você também pode gostar
+                                Combine com...
                             </h2>
                             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                                 {relatedForClient.map((p) => (

@@ -29,6 +29,7 @@ export default function AdminLayout({
     const pathname = usePathname();
 
     useEffect(() => {
+        if (process.env.NEXT_PUBLIC_E2E_TEST === '1') return;
         if (isLoaded && !isSignedIn) {
             router.push("/sign-in");
         }
@@ -42,7 +43,7 @@ export default function AdminLayout({
         );
     }
 
-    if (!isSignedIn) {
+    if (!isSignedIn && process.env.NEXT_PUBLIC_E2E_TEST !== '1') {
         return null;
     }
 

@@ -1,6 +1,11 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware } from '@clerk/nextjs/server'
 
-export default clerkMiddleware();
+// All routes are public during E2E tests
+const publicRoutes = process.env.E2E_AUTH_BYPASS === '1' ? ['/(.*)'] : []
+
+export default clerkMiddleware({
+  publicRoutes,
+})
 
 export const config = {
     matcher: [

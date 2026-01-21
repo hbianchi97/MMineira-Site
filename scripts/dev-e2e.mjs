@@ -12,6 +12,7 @@ const env = {
 const prisma = spawn('npx', ['prisma', 'generate'], {
   stdio: 'inherit',
   env,
+  shell: true,
 })
 
 prisma.on('exit', (code, signal) => {
@@ -23,16 +24,33 @@ prisma.on('exit', (code, signal) => {
     process.exit(code)
   }
 
-  const dev = spawn('npx', ['next', 'dev', '--hostname', '127.0.0.1', '--port', env.PORT], {
+  const seed = spawn('npm', ['run', 'db:seed'], {
     stdio: 'inherit',
     env,
+    shell: true,
   })
 
-  dev.on('exit', (devCode, devSignal) => {
-    if (devSignal) {
-      process.kill(process.pid, devSignal)
+  seed.on('exit', (seedCode, seedSignal) => {
+    if (seedSignal) {
+      process.kill(process.pid, seedSignal)
       return
     }
-    process.exit(devCode ?? 0)
+    if (seedCode && seedCode !== 0) {
+      process.exit(seedCode)
+    }
+
+    const dev = spawn('npx', ['next', 'dev', '--webpack', '--hostname', '127.0.0.1', '--port', env.PORT], {
+      stdio: 'inherit',
+      env,
+      shell: true,
+    })
+
+    dev.on('exit', (devCode, devSignal) => {
+      if (devSignal) {
+        process.kill(process.pid, devSignal)
+        return
+      }
+      process.exit(devCode ?? 0)
+    })
   })
 })

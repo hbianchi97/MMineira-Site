@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-auth";
+import { createAuditLog } from "@/lib/audit-log";
+import { cache } from "@/lib/redis";
 
 export async function PUT(
     request: NextRequest,
@@ -32,6 +34,17 @@ export async function PUT(
             },
         });
 
+        // Invalidate cache and log action
+        await Promise.all([
+            cache.clearByPrefix("catalog:"),
+            createAuditLog({
+                action: "UPDATE",
+                entity: "PRODUCT",
+                entityId: id,
+                details: { name: product.name, slug: product.slug }
+            })
+        ]);
+
         return NextResponse.json(product);
     } catch (error) {
         console.error("Failed to update product:", error);
@@ -52,9 +65,20 @@ export async function DELETE(
     try {
         const { id } = await params;
 
-        await db.product.delete({
+        const deletedProduct = await db.product.delete({
             where: { id },
         });
+
+        // Invalidate cache and log action
+        await Promise.all([
+            cache.clearByPrefix("catalog:"),
+            createAuditLog({
+                action: "DELETE",
+                entity: "PRODUCT",
+                entityId: id,
+                details: { name: deletedProduct.name, slug: deletedProduct.slug }
+            })
+        ]);
 
         return NextResponse.json({ success: true });
     } catch (error) {

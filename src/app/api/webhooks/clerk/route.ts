@@ -2,6 +2,8 @@ import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
+import { sendEmail } from '@/lib/email'
+import { LowStockNotification } from '@/components/emails/LowStockNotification'
 
 export async function POST(req: Request) {
     const HEADER_PAYLOAD = await headers();
@@ -75,6 +77,58 @@ export async function POST(req: Request) {
         await db.user.delete({
             where: { clerkId: id! }
         });
+    }
+
+    if (eventType === 'paymentAttempt.updated') {
+        const { status, metadata } = evt.data;
+
+        if (status === 'paid') {
+            const orderId = metadata?.orderId as string;
+
+            if (orderId) {
+                const settings = await db.adminSettings.findUnique({
+                    where: { id: "singleton" },
+                }) || { lowStockThreshold: 3 };
+
+                const order = await db.order.findUnique({
+                    where: { id: orderId },
+                    include: { items: true },
+                });
+
+                if (order) {
+                    for (const item of order.items) {
+                        const product = await db.product.findUnique({
+                            where: { id: item.productId },
+                        });
+
+                        if (product) {
+                            const newStock = product.stock - item.quantity;
+                            await db.product.update({
+                                where: { id: item.productId },
+                                data: { stock: newStock },
+                            });
+
+                            // Check for low stock
+                            if (newStock <= settings.lowStockThreshold) {
+                                const adminEmails = process.env.ADMIN_EMAILS?.split(',');
+                                if (adminEmails) {
+                                    await sendEmail({
+                                        to: adminEmails,
+                                        subject: `Alerta de Estoque Baixo: ${product.name}`,
+                                        react: <LowStockNotification product={{...product, stock: newStock}} />,
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    
+                    await db.order.update({
+                        where: { id: orderId },
+                        data: { status: 'PAID' }
+                    });
+                }
+            }
+        }
     }
 
     return new Response('', { status: 200 })

@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { cache } from "@/lib/redis";
 import { Category, Product } from "@prisma/client";
 
 export type ProductWithCategory = Product & {
@@ -12,16 +13,32 @@ export type ProductColor = {
 
 // Categories
 export async function getCategories() {
-    return db.category.findMany({
+    const cacheKey = "catalog:categories";
+    const cached = await cache.get<Category[]>(cacheKey);
+    if (cached) return cached;
+
+    const categories = await db.category.findMany({
         where: { isActive: true },
         orderBy: { sortOrder: "asc" },
     });
+
+    await cache.set(cacheKey, categories, 3600); // 1 hour
+    return categories;
 }
 
 export async function getCategoryBySlug(slug: string) {
-    return db.category.findUnique({
+    const cacheKey = `catalog:category:${slug}`;
+    const cached = await cache.get<Category>(cacheKey);
+    if (cached) return cached;
+
+    const category = await db.category.findUnique({
         where: { slug },
     });
+
+    if (category) {
+        await cache.set(cacheKey, category, 3600);
+    }
+    return category;
 }
 
 // Products
@@ -31,6 +48,10 @@ export async function getProducts(options?: {
     isNew?: boolean;
     limit?: number;
 }) {
+    const cacheKey = `catalog:products:${JSON.stringify(options || {})}`;
+    const cached = await cache.get<ProductWithCategory[]>(cacheKey);
+    if (cached) return cached;
+
     const where: Record<string, unknown> = { isActive: true };
 
     if (options?.featured) {
@@ -45,19 +66,31 @@ export async function getProducts(options?: {
         where.category = { slug: options.categorySlug };
     }
 
-    return db.product.findMany({
+    const products = await db.product.findMany({
         where,
         include: { category: true },
         orderBy: { createdAt: "desc" },
         take: options?.limit,
     });
+
+    await cache.set(cacheKey, products, 1800); // 30 mins
+    return products;
 }
 
 export async function getProductBySlug(slug: string) {
-    return db.product.findUnique({
+    const cacheKey = `catalog:product:${slug}`;
+    const cached = await cache.get<ProductWithCategory>(cacheKey);
+    if (cached) return cached;
+
+    const product = await db.product.findUnique({
         where: { slug },
         include: { category: true },
     });
+
+    if (product) {
+        await cache.set(cacheKey, product, 1800);
+    }
+    return product as ProductWithCategory | null;
 }
 
 export async function getFeaturedProducts(limit = 4) {

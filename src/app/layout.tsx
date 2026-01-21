@@ -27,6 +27,12 @@ export const metadata: Metadata = {
         icon: site.icons.favicon,
         apple: site.icons.apple,
     },
+    manifest: "/manifest.json",
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: "default",
+        title: site.name,
+    },
 };
 
 export default function RootLayout({
@@ -41,6 +47,17 @@ export default function RootLayout({
                     className={`${geistSans.variable} ${geistMono.variable} antialiased`}
                 >
                     <Providers>{children}</Providers>
+                    <script
+                        dangerouslySetInnerHTML={{
+                            __html: `
+                              if ('serviceWorker' in navigator) {
+                                window.addEventListener('load', function() {
+                                  navigator.serviceWorker.register('/sw.js');
+                                });
+                              }
+                            `,
+                        }}
+                    />
                 </body>
             </html>
         </ClerkProvider>

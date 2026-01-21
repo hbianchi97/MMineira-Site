@@ -4,6 +4,7 @@ import { WebhookEvent } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
 import { sendEmail } from '@/lib/email'
 import { LowStockNotification } from '@/components/emails/LowStockNotification'
+import React from 'react'
 
 export async function POST(req: Request) {
     const HEADER_PAYLOAD = await headers();
@@ -72,8 +73,6 @@ export async function POST(req: Request) {
     if (eventType === 'user.deleted') {
         const { id } = evt.data;
 
-        // Delete related data first if not handled by cascading deletes (though Prisma schema uses relations)
-        // But safest to follow doc logic:
         await db.user.delete({
             where: { clerkId: id! }
         });
@@ -115,13 +114,16 @@ export async function POST(req: Request) {
                                     await sendEmail({
                                         to: adminEmails,
                                         subject: `Alerta de Estoque Baixo: ${product.name}`,
-                                        react: <LowStockNotification product={{...product, stock: newStock}} />,
+                                        react: React.createElement(LowStockNotification, {
+                                            product: { ...product, stock: newStock },
+                                            threshold: settings.lowStockThreshold
+                                        }),
                                     });
                                 }
                             }
                         }
                     }
-                    
+
                     await db.order.update({
                         where: { id: orderId },
                         data: { status: 'PAID' }

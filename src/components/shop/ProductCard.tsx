@@ -86,6 +86,11 @@ export function ProductCard({
                                 Esgotado
                             </span>
                         )}
+                        {!isSoldOut && price > 0 && (
+                            <span className="rounded-full bg-amber-500/90 px-2 py-1 text-xs font-semibold text-white">
+                                Últimas unidades
+                            </span>
+                        )}
                     </div>
 
                     {/* Quick Add Button */}

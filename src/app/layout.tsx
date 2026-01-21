@@ -27,11 +27,15 @@ export const metadata: Metadata = {
         icon: site.icons.favicon,
         apple: site.icons.apple,
     },
+    themeColor: "#b45309",
     manifest: "/manifest.json",
     appleWebApp: {
         capable: true,
         statusBarStyle: "default",
         title: site.name,
+    },
+    formatDetection: {
+        telephone: false,
     },
 };
 

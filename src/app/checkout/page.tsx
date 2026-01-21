@@ -19,16 +19,18 @@ export default function CheckoutPage() {
         firstName: user?.firstName || "",
         lastName: user?.lastName || "",
         phone: "",
-        address: "",
+        cpf: "",
+        zipCode: "",
+        street: "",
         number: "",
         complement: "",
         neighborhood: "",
         city: "",
         state: "",
-        zipCode: "",
         paymentMethod: "pix",
         shippingMethod: "delivery",
     });
+    const [isLoadingZip, setIsLoadingZip] = useState(false);
 
     const formatPrice = (value: number) => {
         return new Intl.NumberFormat("pt-BR", {
@@ -43,17 +45,86 @@ export default function CheckoutPage() {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+
+        if (name === "zipCode" && value.replace(/\D/g, "").length === 8) {
+            handleZipCodeLookup(value.replace(/\D/g, ""));
+        }
+    };
+
+    const handleZipCodeLookup = async (zip: string) => {
+        setIsLoadingZip(true);
+        try {
+            const response = await fetch(`https://viacep.com.br/ws/${zip}/json/`);
+            const data = await response.json();
+            if (!data.erro) {
+                setFormData((prev) => ({
+                    ...prev,
+                    street: data.logradouro,
+                    neighborhood: data.bairro,
+                    city: data.localidade,
+                    state: data.uf,
+                }));
+            }
+        } catch (error) {
+            console.error("Erro ao buscar CEP:", error);
+        } finally {
+            setIsLoadingZip(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsProcessing(true);
 
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        try {
+            const response = await fetch("/api/checkout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    items: items,
+                    customer: {
+                        ...formData,
+                        address: {
+                            cep: formData.zipCode,
+                            street: formData.street,
+                            number: formData.number,
+                            complement: formData.complement,
+                            neighborhood: formData.neighborhood,
+                            city: formData.city,
+                            state: formData.state,
+                        }
+                    },
+                    shippingMethod: formData.shippingMethod,
+                    paymentMethod: formData.paymentMethod,
+                    totals: {
+                        subtotal,
+                        shipping: shippingCost,
+                        discount: 0,
+                        total,
+                    }
+                }),
+            });
 
-        setIsProcessing(false);
-        setIsComplete(true);
-        clearCart();
+            if (!response.ok) {
+                throw new Error("Falha ao processar o checkout");
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                setIsComplete(true);
+                clearCart();
+            } else {
+                alert(data.error || "Ocorreu um erro ao processar seu pedido.");
+            }
+        } catch (error) {
+            console.error("Checkout error:", error);
+            alert("Erro ao processar o checkout. Por favor, tente novamente.");
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     if (items.length === 0 && !isComplete) {
@@ -258,140 +329,140 @@ export default function CheckoutPage() {
                             </div>
 
                             {formData.shippingMethod === "delivery" && (
-                            <div className="bg-card border border-border rounded-xl p-6">
-                                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                                    <MapPin className="h-5 w-5 text-amber-600" />
-                                    Endereco de Entrega
-                                </h2>
-                                <div className="grid gap-4">
-                                    <div className="grid sm:grid-cols-3 gap-4">
-                                        <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium mb-1">
-                                                CEP
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="zipCode"
-                                                value={formData.zipCode}
-                                                onChange={handleInputChange}
-                                                placeholder="00000-000"
-                                                required={formData.shippingMethod === "delivery"}
-                                                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                                            />
+                                <div className="bg-card border border-border rounded-xl p-6">
+                                    <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                                        <MapPin className="h-5 w-5 text-amber-600" />
+                                        Endereco de Entrega
+                                    </h2>
+                                    <div className="grid gap-4">
+                                        <div className="grid sm:grid-cols-3 gap-4">
+                                            <div className="sm:col-span-1">
+                                                <label className="block text-sm font-medium mb-1">
+                                                    CEP
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    name="zipCode"
+                                                    value={formData.zipCode}
+                                                    onChange={handleInputChange}
+                                                    placeholder="00000-000"
+                                                    required={formData.shippingMethod === "delivery"}
+                                                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="grid sm:grid-cols-4 gap-4">
-                                        <div className="sm:col-span-3">
-                                            <label className="block text-sm font-medium mb-1">
-                                                Endereço
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="address"
-                                                value={formData.address}
-                                                onChange={handleInputChange}
-                                                required
-                                                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">
-                                                Número
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="number"
-                                                value={formData.number}
-                                                onChange={handleInputChange}
-                                                required
-                                                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">
-                                            Complemento
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="complement"
-                                            value={formData.complement}
-                                            onChange={handleInputChange}
-                                            placeholder="Apto, bloco, etc."
-                                            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                                        />
-                                    </div>
-                                    <div className="grid sm:grid-cols-3 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">
-                                                Bairro
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="neighborhood"
-                                                value={formData.neighborhood}
-                                                onChange={handleInputChange}
-                                                required
-                                                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                                            />
+                                        <div className="grid sm:grid-cols-4 gap-4">
+                                            <div className="sm:col-span-3">
+                                                <label className="block text-sm font-medium mb-1">
+                                                    Endereço
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    name="street"
+                                                    value={formData.street}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium mb-1">
+                                                    Número
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    name="number"
+                                                    value={formData.number}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                                />
+                                            </div>
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium mb-1">
-                                                Cidade
+                                                Complemento
                                             </label>
                                             <input
                                                 type="text"
-                                                name="city"
-                                                value={formData.city}
+                                                name="complement"
+                                                value={formData.complement}
                                                 onChange={handleInputChange}
-                                                required
+                                                placeholder="Apto, bloco, etc."
                                                 className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                                             />
                                         </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">
-                                                Estado
-                                            </label>
-                                            <select
-                                                name="state"
-                                                value={formData.state}
-                                                onChange={handleInputChange}
-                                                required
-                                                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                                            >
-                                                <option value="">Selecione</option>
-                                                <option value="AC">Acre</option>
-                                                <option value="AL">Alagoas</option>
-                                                <option value="AP">Amapá</option>
-                                                <option value="AM">Amazonas</option>
-                                                <option value="BA">Bahia</option>
-                                                <option value="CE">Ceará</option>
-                                                <option value="DF">Distrito Federal</option>
-                                                <option value="ES">Espírito Santo</option>
-                                                <option value="GO">Goiás</option>
-                                                <option value="MA">Maranhão</option>
-                                                <option value="MT">Mato Grosso</option>
-                                                <option value="MS">Mato Grosso do Sul</option>
-                                                <option value="MG">Minas Gerais</option>
-                                                <option value="PA">Pará</option>
-                                                <option value="PB">Paraíba</option>
-                                                <option value="PR">Paraná</option>
-                                                <option value="PE">Pernambuco</option>
-                                                <option value="PI">Piauí</option>
-                                                <option value="RJ">Rio de Janeiro</option>
-                                                <option value="RN">Rio Grande do Norte</option>
-                                                <option value="RS">Rio Grande do Sul</option>
-                                                <option value="RO">Rondônia</option>
-                                                <option value="RR">Roraima</option>
-                                                <option value="SC">Santa Catarina</option>
-                                                <option value="SP">São Paulo</option>
-                                                <option value="SE">Sergipe</option>
-                                                <option value="TO">Tocantins</option>
-                                            </select>
+                                        <div className="grid sm:grid-cols-3 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium mb-1">
+                                                    Bairro
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    name="neighborhood"
+                                                    value={formData.neighborhood}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium mb-1">
+                                                    Cidade
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    name="city"
+                                                    value={formData.city}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium mb-1">
+                                                    Estado
+                                                </label>
+                                                <select
+                                                    name="state"
+                                                    value={formData.state}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                                >
+                                                    <option value="">Selecione</option>
+                                                    <option value="AC">Acre</option>
+                                                    <option value="AL">Alagoas</option>
+                                                    <option value="AP">Amapá</option>
+                                                    <option value="AM">Amazonas</option>
+                                                    <option value="BA">Bahia</option>
+                                                    <option value="CE">Ceará</option>
+                                                    <option value="DF">Distrito Federal</option>
+                                                    <option value="ES">Espírito Santo</option>
+                                                    <option value="GO">Goiás</option>
+                                                    <option value="MA">Maranhão</option>
+                                                    <option value="MT">Mato Grosso</option>
+                                                    <option value="MS">Mato Grosso do Sul</option>
+                                                    <option value="MG">Minas Gerais</option>
+                                                    <option value="PA">Pará</option>
+                                                    <option value="PB">Paraíba</option>
+                                                    <option value="PR">Paraná</option>
+                                                    <option value="PE">Pernambuco</option>
+                                                    <option value="PI">Piauí</option>
+                                                    <option value="RJ">Rio de Janeiro</option>
+                                                    <option value="RN">Rio Grande do Norte</option>
+                                                    <option value="RS">Rio Grande do Sul</option>
+                                                    <option value="RO">Rondônia</option>
+                                                    <option value="RR">Roraima</option>
+                                                    <option value="SC">Santa Catarina</option>
+                                                    <option value="SP">São Paulo</option>
+                                                    <option value="SE">Sergipe</option>
+                                                    <option value="TO">Tocantins</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
                             )}
 
                             <div className="bg-card border border-border rounded-xl p-6">

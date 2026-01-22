@@ -6,7 +6,7 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "dev": "prisma generate && next dev",
+    "dev": "prisma generate && next dev --webpack",
     "dev:tunnel": "vercel dev --tunnel",
     "dev:e2e": "node scripts/dev-e2e.mjs",
     "tunnel": "ngrok http 3000",
@@ -39,7 +39,7 @@
     "@clerk/nextjs": "^6.36.8",
     "@google-cloud/storage": "^7.18.0",
     "@hookform/resolvers": "^5.2.2",
-    "@openrouter/ai-sdk-provider": "^2.0.0",
+    "@openrouter/ai-sdk-provider": "^6.0.0-alpha.1",
     "@prisma/client": "^6.19.2",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-avatar": "^1.1.11",
@@ -63,6 +63,7 @@
     "ai": "^6.0.43",
     "class-variance-authority": "0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.28.1",
     "google-auth-library": "^10.5.0",
     "lucide-react": "^0.562.0",

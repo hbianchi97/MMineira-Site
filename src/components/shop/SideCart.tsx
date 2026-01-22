@@ -51,7 +51,7 @@ export function SideCart() {
         <>
             {/* Backdrop */}
             <div
-                className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity"
+                className="fixed inset-0 z-50 bg-background/80 transition-opacity"
                 onClick={closeCart}
                 aria-hidden="true"
             />

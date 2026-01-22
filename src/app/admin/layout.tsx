@@ -78,11 +78,10 @@ export default function AdminLayout({
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-                                        isActive
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${isActive
                                             ? "bg-amber-50 text-amber-700"
                                             : "text-gray-600 hover:bg-gray-50"
-                                    }`}
+                                        }`}
                                 >
                                     <item.icon className="h-5 w-5" />
                                     <span className="font-medium">{item.label}</span>

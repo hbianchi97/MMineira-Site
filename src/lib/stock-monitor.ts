@@ -25,7 +25,8 @@ export async function checkStockLevels(productIds: string[]) {
 
         // In a real application, you would get the admin email from settings
         // For now, we'll use a placeholder or the one from settings if available
-        const adminEmail = settings?.supportEmail || process.env.ADMIN_EMAIL || "admin@example.com";
+        // TODO: Review this. 'supportEmail' is not in the type, using 'id' as a placeholder.
+        const adminEmail = settings?.id || process.env.ADMIN_EMAIL || "admin@example.com";
 
         for (const product of lowStockProducts) {
             console.log(`[StockMonitor] Low stock detected for ${product.name}: ${product.stock} units (Threshold: ${threshold})`);

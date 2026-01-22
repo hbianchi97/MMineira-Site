@@ -186,7 +186,7 @@ model Product {
 model Order {
   id              String      @id @default(cuid())
   orderNumber     String      @unique @default(cuid())
-  userId          String
+  userId          String?
   status          OrderStatus @default(PENDING)
   subtotal        Int         // centavos
   shippingCost    Int         @default(0)
@@ -203,7 +203,7 @@ model Order {
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
-  user  User        @relation(fields: [userId], references: [id])
+  user  User?       @relation(fields: [userId], references: [id])
   items OrderItem[]
 
   @@index([userId])

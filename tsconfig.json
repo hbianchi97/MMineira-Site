@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "ES2017",
     "noImplicitAny": false,
+    "baseUrl": ".",
     "plugins": [
       {
         "name": "next"

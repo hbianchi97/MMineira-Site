@@ -280,395 +280,361 @@ export default function CheckoutPage() {
                             </div>
                         )}
 
-                        <form onSubmit={handleSubmit} className="space-y-8">
-                            {/* Dados Pessoais */}
-                            <section className="bg-white border border-border rounded-3xl p-8 shadow-sm">
-                                <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm">1</span>
-                                    Dados Pessoais
-                                </h2>
-                                <div className="grid gap-5">
-                                    <div className="grid sm:grid-cols-2 gap-5">
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-semibold text-gray-700 ml-1">Nome</label>
-                                            <input
-                                                type="text"
-                                                name="firstName"
-                                                placeholder="Sua nome"
-                                                value={formData.firstName}
-                                                onChange={handleInputChange}
-                                                required
-                                                className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-semibold text-gray-700 ml-1">Sobrenome</label>
-                                            <input
-                                                type="text"
-                                                name="lastName"
-                                                placeholder="Seu sobrenome"
-                                                value={formData.lastName}
-                                                onChange={handleInputChange}
-                                                required
-                                                className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="grid sm:grid-cols-2 gap-5">
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-semibold text-gray-700 ml-1">E-mail</label>
-                                            <input
-                                                type="email"
-                                                name="email"
-                                                placeholder="exemplo@email.com"
-                                                value={formData.email}
-                                                onChange={handleInputChange}
-                                                required
-                                                className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-semibold text-gray-700 ml-1">Telefone / WhatsApp</label>
-                                            <input
-                                                type="tel"
-                                                name="phone"
-                                                placeholder="(00) 00000-0000"
-                                                value={formData.phone}
-                                                onChange={handleInputChange}
-                                                required
-                                                className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-semibold text-gray-700 ml-1">CPF</label>
-                                        <input
-                                            type="text"
-                                            name="cpf"
-                                            placeholder="000.000.000-00"
-                                            value={formData.cpf}
-                                            onChange={handleInputChange}
-                                            required
-                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-                                        />
-                                    </div>
-                                </div>
-                            </section>
-
-                            {/* Entrega */}
-                            <section className="bg-white border border-border rounded-3xl p-8 shadow-sm">
-                                <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm">2</span>
-                                    Entrega
-                                </h2>
-
-                                <div className="grid sm:grid-cols-2 gap-4 mb-8">
-                                    <label className={`relative flex flex-col p-5 border-2 rounded-2xl cursor-pointer transition-all ${formData.shippingMethod === "delivery" ? "border-primary bg-primary/5 shadow-md" : "border-gray-100 hover:border-gray-200"}`}>
-                                        <input
-                                            type="radio"
-                                            name="shippingMethod"
-                                            value="delivery"
-                                            checked={formData.shippingMethod === "delivery"}
-                                            onChange={handleInputChange}
-                                            className="sr-only"
-                                        />
-                                        <MapPin className={`h-6 w-6 mb-3 ${formData.shippingMethod === "delivery" ? "text-primary" : "text-gray-400"}`} />
-                                        <span className="font-bold text-gray-900">Receber em casa</span>
-                                        <span className="text-sm text-gray-500 mt-1">
-                                            {subtotal >= 29900 ? "Frete Grátis" : "Frete: R$ 19,90"}
-                                        </span>
-                                        {formData.shippingMethod === "delivery" && <div className="absolute top-4 right-4"><Check className="h-5 w-5 text-primary" /></div>}
-                                    </label>
-
-                                    <label className={`relative flex flex-col p-5 border-2 rounded-2xl cursor-pointer transition-all ${formData.shippingMethod === "pickup" ? "border-primary bg-primary/5 shadow-md" : "border-gray-100 hover:border-gray-200"}`}>
-                                        <input
-                                            type="radio"
-                                            name="shippingMethod"
-                                            value="pickup"
-                                            checked={formData.shippingMethod === "pickup"}
-                                            onChange={handleInputChange}
-                                            className="sr-only"
-                                        />
-                                        <Store className={`h-6 w-6 mb-3 ${formData.shippingMethod === "pickup" ? "text-primary" : "text-gray-400"}`} />
-                                        <span className="font-bold text-gray-900">Retirar na Loja</span>
-                                        <span className="text-sm text-gray-500 mt-1 leading-tight">São Conrado, RJ</span>
-                                        {formData.shippingMethod === "pickup" && <div className="absolute top-4 right-4"><Check className="h-5 w-5 text-primary" /></div>}
-                                    </label>
-                                </div>
-
-                                {formData.shippingMethod === "delivery" && (
-                                    <div className="grid gap-5 animate-in fade-in slide-in-from-top-4 duration-300">
-                                        <div className="grid sm:grid-cols-3 gap-5">
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-semibold text-gray-700 ml-1">CEP</label>
-                                                <div className="relative">
-                                                    <input
-                                                        type="text"
-                                                        name="zipCode"
-                                                        placeholder="00000-000"
-                                                        value={formData.zipCode}
-                                                        onChange={handleInputChange}
-                                                        required={formData.shippingMethod === "delivery"}
-                                                        className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-                                                    />
-                                                    {isLoadingZip && (
-                                                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                                            <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                                                            {/* Dados Pessoais */}                                                    <section className="bg-white border border-border rounded-3xl p-8 shadow-sm">
+                                                        <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
+                                                            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm">1</span>
+                                                            Dados Pessoais
+                                                        </h2>
+                                                        <div className="grid gap-5">
+                                                            <div className="grid sm:grid-cols-2 gap-5">
+                                                                <div className="space-y-2">
+                                                                    <label className="text-sm font-semibold text-gray-700 ml-1">Nome</label>
+                                                                    <input
+                                                                        type="text"
+                                                                        name="firstName"
+                                                                        placeholder="Sua nome"
+                                                                        value={formData.firstName}
+                                                                        onChange={handleInputChange}
+                                                                        required
+                                                                        className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                                                                    />
+                                                                </div>
+                                                                <div className="space-y-2">
+                                                                    <label className="text-sm font-semibold text-gray-700 ml-1">Sobrenome</label>
+                                                                    <input
+                                                                        type="text"
+                                                                        name="lastName"
+                                                                        placeholder="Seu sobrenome"
+                                                                        value={formData.lastName}
+                                                                        onChange={handleInputChange}
+                                                                        required
+                                                                        className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="grid sm:grid-cols-2 gap-5">
+                                                                <div className="space-y-2">
+                                                                    <label className="text-sm font-semibold text-gray-700 ml-1">E-mail</label>
+                                                                    <input
+                                                                        type="email"
+                                                                        name="email"
+                                                                        placeholder="exemplo@email.com"
+                                                                        value={formData.email}
+                                                                        onChange={handleInputChange}
+                                                                        required
+                                                                        className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                                                                    />
+                                                                </div>
+                                                                <div className="space-y-2">
+                                                                    <label className="text-sm font-semibold text-gray-700 ml-1">Telefone / WhatsApp</label>
+                                                                    <input
+                                                                        type="tel"
+                                                                        name="phone"
+                                                                        placeholder="(00) 00000-0000"
+                                                                        value={formData.phone}
+                                                                        onChange={handleInputChange}
+                                                                        required
+                                                                        className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="space-y-2">
+                                                                <label className="text-sm font-semibold text-gray-700 ml-1">CPF</label>
+                                                                <input
+                                                                    type="text"
+                                                                    name="cpf"
+                                                                    placeholder="000.000.000-00"
+                                                                    value={formData.cpf}
+                                                                    onChange={handleInputChange}
+                                                                    required
+                                                                    className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                                                                />
+                                                            </div>
                                                         </div>
-                                                    )}
+                                                    </section>
+                        
+                                                    {/* Entrega */}
+                                                    <section className="bg-white border border-border rounded-3xl p-8 shadow-sm">
+                                                        <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
+                                                            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm">2</span>
+                                                            Entrega
+                                                        </h2>
+                        
+                                                        <div className="grid sm:grid-cols-2 gap-4 mb-8">
+                                                            <label className={`relative flex flex-col p-5 border-2 rounded-2xl cursor-pointer transition-all ${formData.shippingMethod === "delivery" ? "border-primary bg-primary/5 shadow-md" : "border-gray-100 hover:border-gray-200"}`}>
+                                                                <input
+                                                                    type="radio"
+                                                                    name="shippingMethod"
+                                                                    value="delivery"
+                                                                    checked={formData.shippingMethod === "delivery"}
+                                                                    onChange={handleInputChange}
+                                                                    className="sr-only"
+                                                                />
+                                                                <MapPin className={`h-6 w-6 mb-3 ${formData.shippingMethod === "delivery" ? "text-primary" : "text-gray-400"}`} />
+                                                                <span className="font-bold text-gray-900">Receber em casa</span>
+                                                                <span className="text-sm text-gray-500 mt-1">
+                                                                    {subtotal >= 29900 ? "Frete Grátis" : "Frete: R$ 19,90"}
+                                                                </span>
+                                                                {formData.shippingMethod === "delivery" && <div className="absolute top-4 right-4"><Check className="h-5 w-5 text-primary" /></div>}
+                                                            </label>
+                        
+                                                            <label className={`relative flex flex-col p-5 border-2 rounded-2xl cursor-pointer transition-all ${formData.shippingMethod === "pickup" ? "border-primary bg-primary/5 shadow-md" : "border-gray-100 hover:border-gray-200"}`}>
+                                                                <input
+                                                                    type="radio"
+                                                                    name="shippingMethod"
+                                                                    value="pickup"
+                                                                    checked={formData.shippingMethod === "pickup"}
+                                                                    onChange={handleInputChange}
+                                                                    className="sr-only"
+                                                                />
+                                                                <Store className={`h-6 w-6 mb-3 ${formData.shippingMethod === "pickup" ? "text-primary" : "text-gray-400"}`} />
+                                                                <span className="font-bold text-gray-900">Retirar na Loja</span>
+                                                                <span className="text-sm text-gray-500 mt-1 leading-tight">São Conrado, RJ</span>
+                                                                {formData.shippingMethod === "pickup" && <div className="absolute top-4 right-4"><Check className="h-5 w-5 text-primary" /></div>}
+                                                            </label>
+                                                        </div>
+                        
+                                                        {formData.shippingMethod === "delivery" && (
+                                                            <div className="grid gap-5 animate-in fade-in slide-in-from-top-4 duration-300">
+                                                                <div className="grid sm:grid-cols-3 gap-5">
+                                                                    <div className="space-y-2">
+                                                                        <label className="text-sm font-semibold text-gray-700 ml-1">CEP</label>
+                                                                        <div className="relative">
+                                                                            <input
+                                                                                type="text"
+                                                                                name="zipCode"
+                                                                                placeholder="00000-000"
+                                                                                value={formData.zipCode}
+                                                                                onChange={handleInputChange}
+                                                                                required={formData.shippingMethod === "delivery"}
+                                                                                className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                                                                            />
+                                                                            {isLoadingZip && (
+                                                                                <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                                                                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="grid sm:grid-cols-4 gap-5">
+                                                                    <div className="sm:col-span-3 space-y-2">
+                                                                        <label className="text-sm font-semibold text-gray-700 ml-1">Endereço</label>
+                                                                        <input
+                                                                            type="text"
+                                                                            name="street"
+                                                                            value={formData.street}
+                                                                            onChange={handleInputChange}
+                                                                            required
+                                                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="space-y-2">
+                                                                        <label className="text-sm font-semibold text-gray-700 ml-1">Número</label>
+                                                                        <input
+                                                                            type="text"
+                                                                            name="number"
+                                                                            value={formData.number}
+                                                                            onChange={handleInputChange}
+                                                                            required
+                                                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                <div className="grid sm:grid-cols-2 gap-5">
+                                                                    <div className="space-y-2">
+                                                                        <label className="text-sm font-semibold text-gray-700 ml-1">Complemento</label>
+                                                                        <input
+                                                                            type="text"
+                                                                            name="complement"
+                                                                            placeholder="Apto, bloco, etc."
+                                                                            value={formData.complement}
+                                                                            onChange={handleInputChange}
+                                                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="space-y-2">
+                                                                        <label className="text-sm font-semibold text-gray-700 ml-1">Bairro</label>
+                                                                        <input
+                                                                            type="text"
+                                                                            name="neighborhood"
+                                                                            value={formData.neighborhood}
+                                                                            onChange={handleInputChange}
+                                                                            required
+                                                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                <div className="grid sm:grid-cols-2 gap-5">
+                                                                    <div className="space-y-2">
+                                                                        <label className="text-sm font-semibold text-gray-700 ml-1">Cidade</label>
+                                                                        <input
+                                                                            type="text"
+                                                                            name="city"
+                                                                            value={formData.city}
+                                                                            onChange={handleInputChange}
+                                                                            required
+                                                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="space-y-2">
+                                                                        <label className="text-sm font-semibold text-gray-700 ml-1">Estado</label>
+                                                                        <select
+                                                                            name="state"
+                                                                            value={formData.state}
+                                                                            onChange={handleInputChange}
+                                                                            required
+                                                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none appearance-none"
+                                                                        >
+                                                                            <option value="">Selecione</option>
+                                                                            {["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"].map(uf => (
+                                                                                <option key={uf} value={uf}>{uf}</option>
+                                                                            ))}
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </section>
+                        
+                                                    {/* Pagamento */}
+                                                    <section className="bg-white border border-border rounded-3xl p-8 shadow-sm">
+                                                        <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
+                                                            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm">3</span>
+                                                            Pagamento
+                                                        </h2>
+                        
+                                                        <div className="space-y-3">
+                                                            <label className={`relative flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMethod === "pix" ? "border-primary bg-primary/5 shadow-md" : "border-gray-100 hover:border-gray-200"}`}>
+                                                                <input
+                                                                    type="radio"
+                                                                    name="paymentMethod"
+                                                                    value="pix"
+                                                                    checked={formData.paymentMethod === "pix"}
+                                                                    onChange={handleInputChange}
+                                                                    className="sr-only"
+                                                                />
+                                                                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                                                    <span className="text-green-600 font-bold text-xs">PIX</span>
+                                                                </div>
+                                                                <div className="flex-1">
+                                                                    <span className="font-bold text-gray-900 block font-heading">PIX Instantâneo</span>
+                                                                    <span className="text-sm text-green-600 font-semibold tracking-tight">Ganhe 10% de desconto adicional</span>
+                                                                </div>
+                                                                {formData.paymentMethod === "pix" && <Check className="h-6 w-6 text-primary" />}
+                                                            </label>
+                        
+                                                            <label className={`relative flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMethod === "credit" ? "border-primary bg-primary/5 shadow-md" : "border-gray-100 hover:border-ray-200"}`}>
+                                                                <input
+                                                                    type="radio"
+                                                                    name="paymentMethod"
+                                                                    value="credit"
+                                                                    checked={formData.paymentMethod === "credit"}
+                                                                    onChange={handleInputChange}
+                                                                    className="sr-only"
+                                                                />
+                                                                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                                                                    <CreditCard className="h-6 w-6" />
+                                                                </div>
+                                                                <div className="flex-1">
+                                                                    <span className="font-bold text-gray-900 block font-heading">Cartão de Crédito</span>
+                                                                    <span className="text-sm text-gray-500">Parcele em até 12x sem juros no cartão</span>
+                                                                </div>
+                                                                {formData.paymentMethod === "credit" && <Check className="h-6 w-6 text-primary" />}
+                                                            </label>
+                                                        </div>
+                                                                                                        </section>
+                                                                                                </div>
+                                                                                                </div>
+                                                                            
+                                                                                                {/* Resumo (Desktop Sticky) */}
+                                            <div className="lg:col-span-5 xl:col-span-4">
+                                                <div className="lg:sticky lg:top-28 space-y-6">
+                                                    <div className="bg-white border border-border rounded-[2.5rem] p-8 shadow-xl shadow-gray-100 overflow-hidden relative">
+                                                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-8 -mt-8" />
+                        
+                                                        <h2 className="text-xl font-bold mb-6">Resumo</h2>
+                        
+                                                        <div className="space-y-4 mb-8 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+                                                            {items.map((item) => (
+                                                                <div key={`${item.id}-${item.size}`} className="flex gap-4 group">
+                                                                    <div className="relative w-20 h-24 rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0 border border-gray-100">
+                                                                        <Image
+                                                                            src={item.imageUrl}
+                                                                            alt={item.name}
+                                                                            fill
+                                                                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                                                        />
+                                                                        <div className="absolute top-2 right-2 w-6 h-6 bg-white shadow-md text-primary text-xs font-bold rounded-lg flex items-center justify-center">
+                                                                            {item.quantity}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="flex-1 flex flex-col justify-center min-w-0">
+                                                                        <p className="font-bold text-gray-900 text-sm leading-tight truncate">
+                                                                            {item.name}
+                                                                        </p>
+                                                                        <p className="text-xs text-muted-foreground mt-1 font-medium">
+                                                                            TAM {item.size} {item.color && ` • ${item.color}`}
+                                                                        </p>
+                                                                        <p className="font-bold text-primary mt-2">
+                                                                            {formatPrice(item.price * item.quantity)}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                        
+                                                        <div className="space-y-3 pt-6 border-t border-dashed border-gray-200">
+                                                            <div className="flex justify-between text-sm text-gray-500">
+                                                                <span>Subtotal</span>
+                                                                <span className="font-medium">{formatPrice(subtotal)}</span>
+                                                            </div>
+                                                            <div className="flex justify-between text-sm text-gray-500">
+                                                                <span>Frete</span>
+                                                                <span className={`font-medium ${shippingCost === 0 ? "text-green-600" : ""}`}>
+                                                                    {shippingCost === 0 ? "Grátis" : formatPrice(shippingCost)}
+                                                                </span>
+                                                            </div>
+                                                            {formData.paymentMethod === "pix" && (
+                                                                <div className="flex justify-between text-sm text-green-600 bg-green-50 p-3 rounded-xl border border-green-100 mt-2">
+                                                                    <span className="font-medium">Desconto PIX (10%)</span>
+                                                                    <span className="font-bold">-{formatPrice(total * 0.1)}</span>
+                                                                </div>
+                                                            )}
+                                                            <div className="flex justify-between items-end pt-5 mt-2">
+                                                                <div>
+                                                                    <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">Total</p>
+                                                                    <p className="text-3xl font-black tracking-tighter text-gray-900 leading-none">
+                                                                        {formatPrice(formData.paymentMethod === "pix" ? total * 0.9 : total)}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                        
+                                                        <button
+                                                            type="submit"
+                                                            disabled={isProcessing}
+                                                            className="w-full mt-8 gradient-gold text-white py-5 rounded-2xl font-bold text-lg shadow-gold hover:shadow-gold-lg transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+                                                        >
+                                                            {isProcessing ? (
+                                                                <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin" />
+                                                            ) : (
+                                                                "Confirmar Compra"
+                                                            )}
+                                                        </button>
+                                                    </div>
+                        
+                                                    {/* Trust Badges */}
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div className="bg-white border border-border p-4 rounded-2xl flex flex-col items-center text-center gap-2">
+                                                            <Shield className="h-6 w-6 text-green-600" />
+                                                            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Pagamento Seguro</span>
+                                                        </div>
+                                                        <div className="bg-white border border-border p-4 rounded-2xl flex flex-col items-center text-center gap-2">
+                                                            <Truck className="h-6 w-6 text-primary" />
+                                                            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Entrega Garantida</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="grid sm:grid-cols-4 gap-5">
-                                            <div className="sm:col-span-3 space-y-2">
-                                                <label className="text-sm font-semibold text-gray-700 ml-1">Endereço</label>
-                                                <input
-                                                    type="text"
-                                                    name="street"
-                                                    value={formData.street}
-                                                    onChange={handleInputChange}
-                                                    required
-                                                    className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-semibold text-gray-700 ml-1">Número</label>
-                                                <input
-                                                    type="text"
-                                                    name="number"
-                                                    value={formData.number}
-                                                    onChange={handleInputChange}
-                                                    required
-                                                    className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="grid sm:grid-cols-2 gap-5">
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-semibold text-gray-700 ml-1">Complemento</label>
-                                                <input
-                                                    type="text"
-                                                    name="complement"
-                                                    placeholder="Apto, bloco, etc."
-                                                    value={formData.complement}
-                                                    onChange={handleInputChange}
-                                                    className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-semibold text-gray-700 ml-1">Bairro</label>
-                                                <input
-                                                    type="text"
-                                                    name="neighborhood"
-                                                    value={formData.neighborhood}
-                                                    onChange={handleInputChange}
-                                                    required
-                                                    className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="grid sm:grid-cols-2 gap-5">
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-semibold text-gray-700 ml-1">Cidade</label>
-                                                <input
-                                                    type="text"
-                                                    name="city"
-                                                    value={formData.city}
-                                                    onChange={handleInputChange}
-                                                    required
-                                                    className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-semibold text-gray-700 ml-1">Estado</label>
-                                                <select
-                                                    name="state"
-                                                    value={formData.state}
-                                                    onChange={handleInputChange}
-                                                    required
-                                                    className="w-full px-5 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none appearance-none"
-                                                >
-                                                    <option value="">Selecione</option>
-                                                    {["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"].map(uf => (
-                                                        <option key={uf} value={uf}>{uf}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </section>
-
-                            {/* Pagamento */}
-                            <section className="bg-white border border-border rounded-3xl p-8 shadow-sm">
-                                <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm">3</span>
-                                    Pagamento
-                                </h2>
-
-                                <div className="space-y-3">
-                                    <label className={`relative flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMethod === "pix" ? "border-primary bg-primary/5 shadow-md" : "border-gray-100 hover:border-gray-200"}`}>
-                                        <input
-                                            type="radio"
-                                            name="paymentMethod"
-                                            value="pix"
-                                            checked={formData.paymentMethod === "pix"}
-                                            onChange={handleInputChange}
-                                            className="sr-only"
-                                        />
-                                        <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                                            <span className="text-green-600 font-bold text-xs">PIX</span>
-                                        </div>
-                                        <div className="flex-1">
-                                            <span className="font-bold text-gray-900 block font-heading">PIX Instantâneo</span>
-                                            <span className="text-sm text-green-600 font-semibold tracking-tight">Ganhe 10% de desconto adicional</span>
-                                        </div>
-                                        {formData.paymentMethod === "pix" && <Check className="h-6 w-6 text-primary" />}
-                                    </label>
-
-                                    <label className={`relative flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMethod === "credit" ? "border-primary bg-primary/5 shadow-md" : "border-gray-100 hover:border-gray-200"}`}>
-                                        <input
-                                            type="radio"
-                                            name="paymentMethod"
-                                            value="credit"
-                                            checked={formData.paymentMethod === "credit"}
-                                            onChange={handleInputChange}
-                                            className="sr-only"
-                                        />
-                                        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
-                                            <CreditCard className="h-6 w-6" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <span className="font-bold text-gray-900 block font-heading">Cartão de Crédito</span>
-                                            <span className="text-sm text-gray-500">Parcele em até 12x sem juros no cartão</span>
-                                        </div>
-                                        {formData.paymentMethod === "credit" && <Check className="h-6 w-6 text-primary" />}
-                                    </label>
-                                </div>
-                            </section>
-
-                            {/* Mobile Submit Button */}
-                            <div className="lg:hidden">
-                                <button
-                                    type="submit"
-                                    disabled={isProcessing}
-                                    className="w-full gradient-gold text-white py-5 rounded-full font-bold text-lg shadow-gold hover:shadow-gold-lg transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
-                                >
-                                    {isProcessing ? (
-                                        <>
-                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                            Processando...
-                                        </>
-                                    ) : (
-                                        <>Finalizar Compra • {formatPrice(formData.paymentMethod === "pix" ? total * 0.9 : total)}</>
-                                    )}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    {/* Resumo (Desktop Sticky) */}
-                    <div className="lg:col-span-5 xl:col-span-4">
-                        <div className="lg:sticky lg:top-28 space-y-6">
-                            <div className="bg-white border border-border rounded-[2.5rem] p-8 shadow-xl shadow-gray-100 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-8 -mt-8" />
-
-                                <h2 className="text-xl font-bold mb-6">Resumo</h2>
-
-                                <div className="space-y-4 mb-8 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
-                                    {items.map((item) => (
-                                        <div key={`${item.id}-${item.size}`} className="flex gap-4 group">
-                                            <div className="relative w-20 h-24 rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0 border border-gray-100">
-                                                <Image
-                                                    src={item.imageUrl}
-                                                    alt={item.name}
-                                                    fill
-                                                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                                                />
-                                                <div className="absolute top-2 right-2 w-6 h-6 bg-white shadow-md text-primary text-xs font-bold rounded-lg flex items-center justify-center">
-                                                    {item.quantity}
-                                                </div>
-                                            </div>
-                                            <div className="flex-1 flex flex-col justify-center min-w-0">
-                                                <p className="font-bold text-gray-900 text-sm leading-tight truncate">
-                                                    {item.name}
-                                                </p>
-                                                <p className="text-xs text-muted-foreground mt-1 font-medium">
-                                                    TAM {item.size} {item.color && ` • ${item.color}`}
-                                                </p>
-                                                <p className="font-bold text-primary mt-2">
-                                                    {formatPrice(item.price * item.quantity)}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div className="space-y-3 pt-6 border-t border-dashed border-gray-200">
-                                    <div className="flex justify-between text-sm text-gray-500">
-                                        <span>Subtotal</span>
-                                        <span className="font-medium">{formatPrice(subtotal)}</span>
-                                    </div>
-                                    <div className="flex justify-between text-sm text-gray-500">
-                                        <span>Frete</span>
-                                        <span className={`font-medium ${shippingCost === 0 ? "text-green-600" : ""}`}>
-                                            {shippingCost === 0 ? "Grátis" : formatPrice(shippingCost)}
-                                        </span>
-                                    </div>
-                                    {formData.paymentMethod === "pix" && (
-                                        <div className="flex justify-between text-sm text-green-600 bg-green-50 p-3 rounded-xl border border-green-100 mt-2">
-                                            <span className="font-medium">Desconto PIX (10%)</span>
-                                            <span className="font-bold">-{formatPrice(total * 0.1)}</span>
-                                        </div>
-                                    )}
-                                    <div className="flex justify-between items-end pt-5 mt-2">
-                                        <div>
-                                            <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">Total</p>
-                                            <p className="text-3xl font-black tracking-tighter text-gray-900 leading-none">
-                                                {formatPrice(formData.paymentMethod === "pix" ? total * 0.9 : total)}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button
-                                    onClick={(e) => {
-                                        const form = document.querySelector('form');
-                                        if (form) form.requestSubmit();
-                                    }}
-                                    disabled={isProcessing}
-                                    className="hidden lg:flex w-full mt-8 gradient-gold text-white py-5 rounded-2xl font-bold text-lg shadow-gold hover:shadow-gold-lg transition-all active:scale-95 disabled:opacity-50 items-center justify-center gap-3"
-                                >
-                                    {isProcessing ? (
-                                        <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin" />
-                                    ) : (
-                                        "Confirmar Compra"
-                                    )}
-                                </button>
-                            </div>
-
-                            {/* Trust Badges */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-white border border-border p-4 rounded-2xl flex flex-col items-center text-center gap-2">
-                                    <Shield className="h-6 w-6 text-green-600" />
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Pagamento Seguro</span>
-                                </div>
-                                <div className="bg-white border border-border p-4 rounded-2xl flex flex-col items-center text-center gap-2">
-                                    <Truck className="h-6 w-6 text-primary" />
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Entrega Garantida</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <footer className="py-12 border-t border-border bg-white mt-12">
-                <div className="container mx-auto px-4 text-center">
-                    <p className="text-sm text-muted-foreground">© 2024 Menina Mineira. Todos os direitos reservados.</p>
-                    <p className="text-xs text-muted-foreground/60 mt-2">CNPJ: 00.000.000/0000-00 • Rio de Janeiro, Brasil</p>
-                </div>
-            </footer>
-        </div>
-    );
-}
+                                        </form>

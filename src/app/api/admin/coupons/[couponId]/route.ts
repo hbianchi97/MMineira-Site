@@ -4,13 +4,13 @@ import { requireAdmin } from "@/lib/admin-auth";
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { couponId: string } }
+    context: { params: Promise<{ couponId: string }> }
 ) {
     const unauthorized = await requireAdmin();
     if (unauthorized) return unauthorized;
 
     try {
-        const { couponId } = params;
+        const { couponId } = await context.params;
         const coupon = await db.coupon.findUnique({
             where: { id: couponId },
         });
@@ -31,13 +31,13 @@ export async function GET(
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { couponId: string } }
+    context: { params: Promise<{ couponId: string }> }
 ) {
     const unauthorized = await requireAdmin();
     if (unauthorized) return unauthorized;
 
     try {
-        const { couponId } = params;
+        const { couponId } = await context.params;
         const body = await request.json();
 
         const coupon = await db.coupon.update({
@@ -65,13 +65,13 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { couponId: string } }
+    context: { params: Promise<{ couponId: string }> }
 ) {
     const unauthorized = await requireAdmin();
     if (unauthorized) return unauthorized;
 
     try {
-        const { couponId } = params;
+        const { couponId } = await context.params;
 
         await db.coupon.delete({
             where: { id: couponId },

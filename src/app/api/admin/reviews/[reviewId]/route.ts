@@ -4,13 +4,13 @@ import { requireAdmin } from "@/lib/admin-auth";
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { reviewId: string } }
+    context: { params: Promise<{ reviewId: string }> }
 ) {
     const unauthorized = await requireAdmin();
     if (unauthorized) return unauthorized;
 
     try {
-        const { reviewId } = params;
+        const { reviewId } = await context.params;
         const body = await request.json();
 
         const review = await db.review.update({
@@ -21,7 +21,7 @@ export async function PUT(
         });
 
         return NextResponse.json(review);
-    } catch (error)_ {
+    } catch (error) {
         console.error("Failed to update review:", error);
         return NextResponse.json(
             { error: "Failed to update review" },
@@ -32,13 +32,13 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { reviewId: string } }
+    context: { params: Promise<{ reviewId: string }> }
 ) {
     const unauthorized = await requireAdmin();
     if (unauthorized) return unauthorized;
 
     try {
-        const { reviewId } = params;
+        const { reviewId } = await context.params;
 
         await db.review.delete({
             where: { id: reviewId },

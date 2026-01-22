@@ -5,10 +5,10 @@ import { auth } from "@clerk/nextjs/server";
 
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await context.params;
 
         const product = await db.product.findUnique({
             where: { id },

@@ -4,10 +4,10 @@ import { getAuth } from "@clerk/nextjs/server";
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await context.params;
         const reviews = await db.review.findMany({
             where: {
                 productId: id,
@@ -35,7 +35,7 @@ export async function GET(
 
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
     const { userId } = getAuth(request);
     if (!userId) {
@@ -43,7 +43,7 @@ export async function POST(
     }
 
     try {
-        const { id } = params;
+        const { id } = await context.params;
         const body = await request.json();
 
         const review = await db.review.create({

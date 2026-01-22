@@ -79,7 +79,7 @@ export async function POST(req: Request) {
     }
 
     if (eventType === 'paymentAttempt.updated') {
-        const { status, metadata } = evt.data;
+        const { status, metadata } = evt.data as any;
 
         if (status === 'paid') {
             const orderId = metadata?.orderId as string;
@@ -94,40 +94,33 @@ export async function POST(req: Request) {
                     include: { items: true },
                 });
 
-                if (order) {
+                if (order && order.status !== 'PAID') {
+                    // Update order status to PAID
+                    await db.order.update({
+                        where: { id: orderId },
+                        data: { status: 'PAID' }
+                    });
+
+                    // Check for low stock on items (stock was already decremented at checkout)
                     for (const item of order.items) {
                         const product = await db.product.findUnique({
                             where: { id: item.productId },
                         });
 
-                        if (product) {
-                            const newStock = product.stock - item.quantity;
-                            await db.product.update({
-                                where: { id: item.productId },
-                                data: { stock: newStock },
-                            });
-
-                            // Check for low stock
-                            if (newStock <= settings.lowStockThreshold) {
-                                const adminEmails = process.env.ADMIN_EMAILS?.split(',');
-                                if (adminEmails) {
-                                    await sendEmail({
-                                        to: adminEmails,
-                                        subject: `Alerta de Estoque Baixo: ${product.name}`,
-                                        react: React.createElement(LowStockNotification, {
-                                            product: { ...product, stock: newStock },
-                                            threshold: settings.lowStockThreshold
-                                        }),
-                                    });
-                                }
+                        if (product && product.stock <= settings.lowStockThreshold) {
+                            const adminEmails = process.env.ADMIN_EMAILS?.split(',');
+                            if (adminEmails) {
+                                await sendEmail({
+                                    to: adminEmails,
+                                    subject: `Alerta de Estoque Baixo: ${product.name}`,
+                                    react: React.createElement(LowStockNotification, {
+                                        product: { ...product, stock: product.stock } as any,
+                                        threshold: settings.lowStockThreshold
+                                    }),
+                                });
                             }
                         }
                     }
-
-                    await db.order.update({
-                        where: { id: orderId },
-                        data: { status: 'PAID' }
-                    });
                 }
             }
         }

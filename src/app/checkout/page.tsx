@@ -104,62 +104,74 @@ export default function CheckoutPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log("Submit button clicked. Form data:", formData);
 
         // Basic validation
         if (formData.cpf.replace(/\D/g, "").length !== 11) {
+            console.warn("Validation failed: Invalid CPF", formData.cpf);
             alert("Por favor, insira um CPF válido.");
             return;
         }
 
         setIsProcessing(true);
+        console.log("Starting checkout API call...");
 
         try {
+            const payload = {
+                items: items,
+                customer: {
+                    ...formData,
+                    name: `${formData.firstName} ${formData.lastName}`,
+                    address: {
+                        cep: formData.zipCode,
+                        street: formData.street,
+                        number: formData.number,
+                        complement: formData.complement,
+                        neighborhood: formData.neighborhood,
+                        city: formData.city,
+                        state: formData.state,
+                    }
+                },
+                shippingMethod: formData.shippingMethod,
+                paymentMethod: formData.paymentMethod,
+                totals: {
+                    subtotal,
+                    shipping: shippingCost,
+                    discount: formData.paymentMethod === "pix" ? Math.round(total * 0.1) : 0,
+                    total: formData.paymentMethod === "pix" ? Math.round(total * 0.9) : total,
+                }
+            };
+            console.log("Payload being sent:", payload);
+
             const response = await fetch("/api/checkout", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    items: items,
-                    customer: {
-                        ...formData,
-                        name: `${formData.firstName} ${formData.lastName}`,
-                        address: {
-                            cep: formData.zipCode,
-                            street: formData.street,
-                            number: formData.number,
-                            complement: formData.complement,
-                            neighborhood: formData.neighborhood,
-                            city: formData.city,
-                            state: formData.state,
-                        }
-                    },
-                    shippingMethod: formData.shippingMethod,
-                    paymentMethod: formData.paymentMethod,
-                    totals: {
-                        subtotal,
-                        shipping: shippingCost,
-                        discount: formData.paymentMethod === "pix" ? Math.round(total * 0.1) : 0,
-                        total: formData.paymentMethod === "pix" ? Math.round(total * 0.9) : total,
-                    }
-                }),
+                body: JSON.stringify(payload),
             });
 
+            console.log("Response status:", response.status);
+
             if (!response.ok) {
-                throw new Error("Falha ao processar o checkout");
+                const errorText = await response.text();
+                console.error("HTTP Error Response:", errorText);
+                throw new Error(`Falha ao processar o checkout: ${response.status}`);
             }
 
             const data = await response.json();
+            console.log("Checkout API JSON Response:", data);
 
             if (data.success) {
                 setIsComplete(true);
                 clearCart();
                 window.scrollTo(0, 0);
             } else {
+                console.error("Checkout Business Logic Error:", data.error);
                 alert(data.error || "Ocorreu um erro ao processar seu pedido.");
             }
         } catch (error) {
-            console.error("Checkout error:", error);
+            console.error("Detailed Checkout Catch Error:", error);
             alert("Erro ao processar o checkout. Por favor, tente novamente.");
         } finally {
             setIsProcessing(false);

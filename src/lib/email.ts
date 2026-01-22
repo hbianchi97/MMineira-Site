@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 interface EmailParams {
     to: string | string[];
@@ -9,8 +9,8 @@ interface EmailParams {
 }
 
 export const sendEmail = async ({ to, subject, react }: EmailParams) => {
-    if (!process.env.RESEND_API_KEY) {
-        console.log("RESEND_API_KEY not found, skipping email.");
+    if (!resend) {
+        console.log("RESEND_API_KEY not found or Resend not initialized, skipping email.");
         return;
     }
 
